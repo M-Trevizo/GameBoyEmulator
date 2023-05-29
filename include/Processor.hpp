@@ -1,5 +1,5 @@
-#ifndef Processor
-#define Processor
+#ifndef PROCESSOR_HPP
+#define PROCESSOR_HPP
 
 #include <cstdint>
 

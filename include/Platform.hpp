@@ -1,3 +1,6 @@
+#ifndef PLATFORM_HPP
+#define PLATFORM_HPP
+
 #include <SDL.h>
 
 class Platform {
@@ -10,6 +13,10 @@ class Platform {
     SDL_Window *window;
     SDL_Event event;
 
-    void initPlatform();
-
+    Platform();
+    ~Platform();
+    bool processEvents();
+    
 };
+
+#endif
