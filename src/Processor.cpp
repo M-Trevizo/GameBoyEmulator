@@ -1,8 +1,13 @@
 #include <iostream>
+#include <chrono>
 #include "../include/Processor.hpp"
 
 using namespace std;
 
-void Processor::initProcessor() {
-    
+Processor::Processor() {
+
+}
+
+void Processor::tickClock() {
+
 }

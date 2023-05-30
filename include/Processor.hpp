@@ -10,14 +10,16 @@ class Processor {
     public:
 
         uint16_t memory[MEM_SIZE];
-        uint16_t AF;
-        uint16_t BC;
-        uint16_t DE;
-        uint16_t HL;
+        uint16_t AF = 0;
+        uint16_t BC = 0;
+        uint16_t DE = 0;
+        uint16_t HL = 0;
         int PC;
         int SP;
+        bool isRunning = false;
 
-        void initProcessor();
+        Processor();
+        void tickClock();
 
 };
 
