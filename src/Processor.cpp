@@ -9,5 +9,5 @@ Processor::Processor() {
 }
 
 void Processor::tickClock() {
-
+    // 238 nanoseconds
 }
