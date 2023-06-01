@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include "../include/Cartridge.hpp"
 
 Cartridge::Cartridge(string path) {
@@ -17,10 +18,8 @@ Cartridge::Cartridge(string path) {
     filebuf *pBuf = stream.rdbuf();
     while(pBuf->sgetc() != EOF) {
 
-        int i = 0;
         uint8_t byte = pBuf->sbumpc();
-        cartROM[i] = byte;
-        i++;
+        cartROM.push_back(byte);
 
     }
 
