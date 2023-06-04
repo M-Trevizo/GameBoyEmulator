@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-const unsigned int MEM_SIZE = 65536;
+const uint16_t MEM_SIZE = 65536;
 
 class Processor {
 
@@ -18,8 +18,9 @@ class Processor {
         int SP;
         bool isRunning = false;
 
-        Processor();
+        Processor(uint8_t cartType);
         void tickClock();
+        void bootSequence(Cartridge cart);
 
 };
 
