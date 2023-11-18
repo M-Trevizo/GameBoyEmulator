@@ -49,3 +49,4 @@ _deps
 
 # SDL
 /include/SDL2/
+/include/lib/
