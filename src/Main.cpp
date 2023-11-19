@@ -6,6 +6,11 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
+    if(argc != 2) {
+        cout << "Please provide file path argument." << endl;
+        return 1;
+    }
+    
     string path = argv[1];
 
     Cartridge cartridge(path);
@@ -13,7 +18,7 @@ int main(int argc, char** argv) {
     
     bool quit = false;
     while(!quit) {
-
+        
         quit = platform.processEvents();
         
     }
