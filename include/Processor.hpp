@@ -26,12 +26,12 @@ class Processor {
         int SP;
         bool isRunning = false;
 
-        Processor(uint8_t cartType);
+        Processor(Cartridge cartridge, uint8_t cartType = 0);
         void tickClock();
         void bootSequence(Cartridge cart);
         uint16_t fetch(int PC);
         array<uint8_t, 2> decode(uint8_t opCode);
-        
+        void execute(array<uint8_t, 2> nibbles);
 
 };
 

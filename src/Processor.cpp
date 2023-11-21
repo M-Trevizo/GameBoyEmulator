@@ -7,7 +7,11 @@
 
 using namespace std;
 
-Processor::Processor(uint8_t cartType) {
+Processor::Processor(Cartridge cartridge, uint8_t cartType = 0) {
+
+    for(int i = 0; i < VRAM_START; i++) {
+        cartridge.cartROM[i] = memory[i];
+    }
 
 }
 
@@ -23,6 +27,7 @@ void Processor::tickClock() {
         
 }
 
+// Boot Rom, not sure this is required.
 void Processor::bootSequence(Cartridge cart) {
 
     uint16_t logoStart = 0x0104;
@@ -54,4 +59,8 @@ array<uint8_t, 2> Processor::decode(uint8_t opCode) {
     array<uint8_t, 2> nibbles = {highNibble, lowNibble};
     
     return nibbles;
+}
+
+void Processor::execute(array<uint8_t, 2> nibbles) {
+
 }
