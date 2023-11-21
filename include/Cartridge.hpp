@@ -11,7 +11,7 @@ class Cartridge {
 
     public:
     
-        vector<uint16_t> cartROM;
+        vector<uint8_t> cartROM;
         uint8_t cartType;
         
         Cartridge(string path);
