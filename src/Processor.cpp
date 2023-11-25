@@ -62,5 +62,47 @@ array<uint8_t, 2> Processor::decode(uint8_t opCode) {
 }
 
 void Processor::execute(array<uint8_t, 2> nibbles) {
+    
+    uint8_t nibble1 = nibbles[0];
+    uint8_t nibble2 = nibbles[1];
 
+    switch(nibble1) {
+        case 0x0: 
+            switch(nibble2) {
+                case 0x0: ;
+                break;
+            }
+        break;
+        case 0x1:
+            switch(nibble2) {
+                case 0x0: ;
+                break;
+            }
+    }
+}
+
+int Processor::NOP() {
+    return 1;
+};
+
+int Processor::LD_BC() {
+    
+    uint8_t highByte = fetch(PC);
+    uint8_t lowByte = fetch(PC);
+    
+    uint16_t word = (highByte << 8) || lowByte;
+    
+    BC = word;
+    
+    return 3;
+}
+
+int Processor::LD_BC_A() {
+    
+    uint16_t mask = 0xFF00;
+    uint8_t A = AF && mask;
+    
+    BC = A;
+
+    return 2;
 }
