@@ -53,8 +53,8 @@ array<uint8_t, 2> Processor::decode(uint8_t opCode) {
     uint8_t highMask = 0xF0;
     uint8_t lowMask = 0x0F;
 
-    uint8_t highNibble = (highMask && opCode) >> 4;
-    uint8_t lowNibble = (lowMask && opCode);
+    uint8_t highNibble = (highMask & opCode) >> 4;
+    uint8_t lowNibble = (lowMask & opCode);
 
     array<uint8_t, 2> nibbles = {highNibble, lowNibble};
     
@@ -81,28 +81,85 @@ void Processor::execute(array<uint8_t, 2> nibbles) {
     }
 }
 
+// 0x00
 int Processor::NOP() {
     return 1;
 };
 
+// 0x01
 int Processor::LD_BC() {
     
     uint8_t highByte = fetch(PC);
     uint8_t lowByte = fetch(PC);
     
-    uint16_t word = (highByte << 8) || lowByte;
+    uint16_t word = (highByte << 8) | lowByte;
     
     BC = word;
     
     return 3;
 }
 
+// 0x02
 int Processor::LD_BC_A() {
     
-    uint16_t mask = 0xFF00;
-    uint8_t A = AF && mask;
-    
-    BC = A;
+    BC = (A << 8) | BC;
 
     return 2;
+}
+
+// 0x03
+int Processor::INC_BC() {
+    
+    BC++;
+
+    return 2;
+}
+
+// 0x04
+int Processor::INC_B() {
+
+    uint16_t mask = 0xFF00;
+    uint8_t B = BC & mask;
+
+    B++;
+
+    F = F & 0xBF;
+    
+    if(B) {
+
+    }
+
+    BC = (B << 8) | BC;
+
+    return 1;
+}
+
+// 0x05
+int Processor::DEC_B() {
+    
+    uint16_t mask = 0xFF00;
+    uint8_t B = BC & mask;
+
+    B--;
+
+    BC = (B << 8) | BC;
+
+    return 1;
+}
+
+// 0x06
+int Processor::LD_B() {
+    
+    uint8_t byte = fetch(PC);
+    uint16_t mask = 0xFF00;
+    uint8_t B = BC & mask;
+
+    B = byte;
+
+    return 2;
+}
+
+// 0x07
+int Processor::RLCA() {
+
 }
