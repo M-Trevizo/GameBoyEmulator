@@ -7,6 +7,10 @@
 const uint16_t MEM_SIZE = 65535;
 const uint16_t VRAM_START = 0x8000;
 const int M_CYCLES_PER_FRAME = 17476;                           // Based on a 60 FPS limit.
+static const uint8_t ZERO_MASK = 0x80;
+static const uint8_t N_MASK = 0x40;
+static const uint8_t H_MASK = 0x20;
+static const uint8_t CARRY_MASK = 0x10;
 
 class Processor {
 
@@ -15,7 +19,8 @@ class Processor {
         uint8_t memory[MEM_SIZE];
 
         // General Registers
-        uint16_t AF = 0;
+        uint8_t A = 0;
+        uint8_t F = 0;
         uint16_t BC = 0;
         uint16_t DE = 0;
         uint16_t HL = 0;
