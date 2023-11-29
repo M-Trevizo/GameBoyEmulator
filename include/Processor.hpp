@@ -7,10 +7,10 @@
 const uint16_t MEM_SIZE = 65535;
 const uint16_t VRAM_START = 0x8000;
 const int M_CYCLES_PER_FRAME = 17476;                           // Based on a 60 FPS limit.
-static const uint8_t ZERO_MASK = 0x80;
-static const uint8_t N_MASK = 0x40;
-static const uint8_t H_MASK = 0x20;
-static const uint8_t CARRY_MASK = 0x10;
+static const uint8_t Z_FLAG = 0x0080;
+static const uint8_t N_FLAG = 0x0040;
+static const uint8_t H_FLAG = 0x0020;
+static const uint8_t C_FLAG = 0x0010;
 
 class Processor {
 
@@ -27,8 +27,12 @@ class Processor {
         // Hardware Registers
         uint8_t LCDC = 0;                                      // LCD Control
 
+        // Program Counter
         int PC;
+
+        // Stack Pointer
         int SP;
+
         bool isRunning = false;
 
         Processor(Cartridge cartridge, uint8_t cartType = 0);
@@ -58,7 +62,7 @@ class Processor {
         // 0x08
         int LD_16BIT_SP();
         // 0x09
-        int ADD_BC_LC();
+        int ADD_BC_HL();
         // 0x0A
         int LD_A_BC();
         // 0x0B
