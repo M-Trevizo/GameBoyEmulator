@@ -40,6 +40,19 @@ void Processor::bootSequence(Cartridge cart) {
     
 }
 
+array<uint8_t, 2> Processor::get8BitRegisters(uint16_t r) {
+
+    uint8_t highMask = 0xFF00;
+    uint8_t lowMask = 0x00FF;
+
+    uint8_t highRegister = (r & highMask) >> 8;
+    uint8_t lowRegister = r & lowMask;
+
+    array<uint8_t, 2> registers = {highRegister, lowRegister};
+
+    return registers;
+}
+
 uint16_t Processor::fetch(int PC) {
     
     uint8_t opCode = memory[PC];

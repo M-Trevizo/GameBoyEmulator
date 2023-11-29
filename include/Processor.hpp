@@ -19,8 +19,7 @@ class Processor {
         uint8_t memory[MEM_SIZE];
 
         // General Registers
-        uint8_t A = 0;
-        uint8_t F = 0;
+        uint16_t AF = 0;
         uint16_t BC = 0;
         uint16_t DE = 0;
         uint16_t HL = 0;
@@ -35,6 +34,7 @@ class Processor {
         Processor(Cartridge cartridge, uint8_t cartType = 0);
         void tickClock();
         void bootSequence(Cartridge cart);
+        array<uint8_t, 2> get8BitRegisters(uint16_t r);
         uint16_t fetch(int PC);
         array<uint8_t, 2> decode(uint8_t opCode);
         void execute(array<uint8_t, 2> nibbles);
