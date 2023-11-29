@@ -40,6 +40,7 @@ void Processor::bootSequence(Cartridge cart) {
     
 }
 
+// Returns array<uint8_t, 2> containing high and low byte of a given 16-bit register.
 array<uint8_t, 2> Processor::get8BitRegisters(uint16_t r) {
 
     uint8_t highMask = 0xFF00;
@@ -115,7 +116,8 @@ int Processor::LD_BC() {
 // 0x02
 int Processor::LD_BC_A() {
     
-    BC = (A << 8) | BC;
+    uint8_t A = get8BitRegisters(AF)[0];
+    memory[BC] = A;
 
     return 2;
 }
@@ -131,17 +133,18 @@ int Processor::INC_BC() {
 // 0x04
 int Processor::INC_B() {
 
-    uint16_t mask = 0xFF00;
-    uint8_t B = BC & mask;
-
+    uint8_t B = get8BitRegisters(BC)[0];
     B++;
 
-    F = F & 0xBF;
-    
-    if(B) {
-
+    uint8_t lowNibble = B & 0x0F;
+    if(B == 0) {
+        AF &= Z_FLAG;
     }
-
+    if(lowNibble == 0) {
+        AF &= H_FLAG;
+    }
+    AF &= ~N_FLAG;
+    
     BC = (B << 8) | BC;
 
     return 1;
@@ -150,13 +153,20 @@ int Processor::INC_B() {
 // 0x05
 int Processor::DEC_B() {
     
-    uint16_t mask = 0xFF00;
-    uint8_t B = BC & mask;
-
+    uint8_t B = get8BitRegisters(BC)[0];
     B--;
 
-    BC = (B << 8) | BC;
+    uint8_t lowNibble = B & 0x0F;
+    if(B == 0) {
+        AF &= Z_FLAG;
+    }
+    if(lowNibble == 0xF) {
+        AF &= H_FLAG;
+    }
+    AF &= N_FLAG;
 
+    BC = (B << 8) | BC;
+    
     return 1;
 }
 
@@ -164,15 +174,57 @@ int Processor::DEC_B() {
 int Processor::LD_B() {
     
     uint8_t byte = fetch(PC);
-    uint16_t mask = 0xFF00;
-    uint8_t B = BC & mask;
+    uint8_t C = get8BitRegisters(BC)[1];
 
-    B = byte;
+    BC = (byte << 8) | C;
 
     return 2;
 }
 
 // 0x07
 int Processor::RLCA() {
+
+    uint8_t A = get8BitRegisters(AF)[0];
+    uint8_t bit = A >> 7;
+
+    A = (A << 1) | bit;
+    AF = (A << 8) | AF;
+
+    // Unset ZNH flags
+    AF &= ~Z_FLAG;
+    AF &= ~N_FLAG;
+    AF &= ~H_FLAG;
+
+    // Set C flag appropriatly
+    if(bit) {
+        AF &= C_FLAG;
+    }
+
+    return 1;
+}
+
+// 0x08
+int Processor::LD_16BIT_SP() {
+
+    uint8_t addressHigh = fetch(PC);
+    uint8_t addressLow = fetch(PC);
+    uint16_t address = (addressHigh << 8) | addressLow;
+
+    array<uint8_t, 2> stackPointer = get8BitRegisters(SP);
+    uint8_t highByte = stackPointer[0];
+    uint8_t lowByte = stackPointer[1];
+    
+    memory[address] = highByte;
+    memory[address + 1] = lowByte;
+
+    return 5;
+}
+
+// 0x09
+int Processor::ADD_BC_HL() {
+    // TODO: set C and H flags appropriatly
+    HL += BC;
+
+    AF &= ~N_FLAG;
 
 }

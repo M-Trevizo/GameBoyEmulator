@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
 
     if(argc != 2) {
         cout << "Please provide file path argument." << endl;
-        return 1;
+        return 0;
     }
     
     string path = argv[1];
