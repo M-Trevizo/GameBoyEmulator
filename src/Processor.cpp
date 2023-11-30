@@ -83,7 +83,37 @@ void Processor::execute(array<uint8_t, 2> nibbles) {
     switch(nibble1) {
         case 0x0: 
             switch(nibble2) {
-                case 0x0: ;
+                case 0x0: NOP();
+                break;
+                case 0x1: LD_BC();
+                break;
+                case 0x2: LD_BC_A();
+                break;
+                case 0x3: INC_BC();
+                break;
+                case 0x4: INC_B();
+                break;
+                case 0x5: DEC_B();
+                break;
+                case 0x6: LD_B();
+                break;
+                case 0x7: RLCA();
+                break;
+                case 0x8: LD_16BIT_SP();
+                break;
+                case 0x9: ADD_HL_BC();
+                break;
+                case 0xA: LD_A_BC();
+                break;
+                case 0xB: DEC_BC();
+                break;
+                case 0xC: INC_C();
+                break;
+                case 0xD: DEC_C();
+                break;
+                case 0xE: LD_C();
+                break;
+                case 0xF: RRCA();
                 break;
             }
         break;
@@ -92,6 +122,8 @@ void Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0x0: ;
                 break;
             }
+        break;
+        default: cout << "Instruction not recognized." << endl;
     }
 }
 
@@ -221,10 +253,111 @@ int Processor::LD_16BIT_SP() {
 }
 
 // 0x09
-int Processor::ADD_BC_HL() {
-    // TODO: set C and H flags appropriatly
-    HL += BC;
-
+int Processor::ADD_HL_BC() {
+    
+    if((int)HL + (int)BC > 0xFFFF) {
+        AF &= C_FLAG;
+    }
+    if((int)HL + (int)BC > 0xFFF) {
+        AF &= H_FLAG;
+    }
     AF &= ~N_FLAG;
 
+    HL += BC;
+
+    return 2;
+}
+
+// 0x0A
+int Processor::LD_A_BC() {
+
+    uint8_t A = get8BitRegisters(AF)[0];
+    A = memory[BC];
+    
+    AF = (A << 8) | AF;
+
+    return 2;
+}
+
+// 0x0B
+int Processor::DEC_BC() {
+    
+    BC--;
+
+    return 2;
+}
+
+// 0x0C
+int Processor::INC_C() {
+
+    array<uint8_t, 2> registers = get8BitRegisters(BC);
+    uint8_t B = registers[0];
+    uint8_t C = registers[1];
+    C++;
+
+    uint8_t lowNibble = C & 0x0F;
+    if(C == 0) {
+        AF &= Z_FLAG;
+    }
+    if(lowNibble == 0) {
+        AF &= H_FLAG;
+    }
+    AF &= ~N_FLAG;
+    
+    BC = (B << 8) | C;
+
+    return 1;
+}
+
+// 0x0D
+int Processor::DEC_C() {
+
+    array<uint8_t, 2> registers = get8BitRegisters(BC);
+    uint8_t B = registers[0];
+    uint8_t C = registers[1];
+    C--;
+
+    uint8_t lowNibble = C & 0x0F;
+    if(C == 0) {
+        AF &= Z_FLAG;
+    }
+    if(lowNibble == 0) {
+        AF &= H_FLAG;
+    }
+    AF &= N_FLAG;
+    
+    BC = (B << 8) | C;
+
+    return 1;
+}
+
+// 0x0E
+int Processor::LD_C() {
+
+    uint8_t B = get8BitRegisters(BC)[0];
+    uint8_t C = fetch(PC);
+
+    BC = (B << 8) | C;
+
+    return 2;
+}
+
+// 0x0F
+int Processor::RRCA() {
+
+    uint8_t A = get8BitRegisters(AF)[0];
+    uint8_t bit = A << 7;
+    
+    A = A >> 1;
+    A |= bit;
+    AF = (A << 8) | AF;
+
+    if(bit == 0) {
+        AF &= ~C_FLAG;
+    }
+    else {
+        AF &= C_FLAG;
+    }
+
+    return 1;
 }
