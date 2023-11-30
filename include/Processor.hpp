@@ -62,7 +62,7 @@ class Processor {
         // 0x08
         int LD_16BIT_SP();
         // 0x09
-        int ADD_BC_HL();
+        int ADD_HL_BC();
         // 0x0A
         int LD_A_BC();
         // 0x0B
