@@ -7,10 +7,11 @@
 const uint16_t MEM_SIZE = 65535;
 const uint16_t VRAM_START = 0x8000;
 const int M_CYCLES_PER_FRAME = 17476;                           // Based on a 60 FPS limit.
-static const uint8_t Z_FLAG = 0x0080;
-static const uint8_t N_FLAG = 0x0040;
-static const uint8_t H_FLAG = 0x0020;
-static const uint8_t C_FLAG = 0x0010;
+int CYCLES_EXECUTED = 0;
+const uint8_t Z_FLAG = 0x0080;
+const uint8_t N_FLAG = 0x0040;
+const uint8_t H_FLAG = 0x0020;
+const uint8_t C_FLAG = 0x0010;
 
 class Processor {
 
@@ -39,9 +40,9 @@ class Processor {
         void tickClock();
         void bootSequence(Cartridge cart);
         array<uint8_t, 2> get8BitRegisters(uint16_t r);
-        uint16_t fetch(int PC);
+        uint16_t fetch();
         array<uint8_t, 2> decode(uint8_t opCode);
-        void execute(array<uint8_t, 2> nibbles);
+        int execute(array<uint8_t, 2> nibbles);
         
         // 0x00
         int NOP();
