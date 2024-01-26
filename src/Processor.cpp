@@ -13,6 +13,8 @@ Processor::Processor(Cartridge cartridge, uint8_t cartType = 0) {
         cartridge.cartROM[i] = memory[i];
     }
 
+    PC = 0x0100;
+
 }
 
 void Processor::tickClock() {
@@ -54,12 +56,12 @@ array<uint8_t, 2> Processor::get8BitRegisters(uint16_t r) {
     return registers;
 }
 
-uint16_t Processor::fetch(int PC) {
+uint16_t Processor::fetch() {
     
     uint8_t opCode = memory[PC];
     PC++;
-    return opCode;
 
+    return opCode;
 }
 
 array<uint8_t, 2> Processor::decode(uint8_t opCode) {
@@ -75,7 +77,7 @@ array<uint8_t, 2> Processor::decode(uint8_t opCode) {
     return nibbles;
 }
 
-void Processor::execute(array<uint8_t, 2> nibbles) {
+int Processor::execute(array<uint8_t, 2> nibbles) {
     
     uint8_t nibble1 = nibbles[0];
     uint8_t nibble2 = nibbles[1];
@@ -83,37 +85,37 @@ void Processor::execute(array<uint8_t, 2> nibbles) {
     switch(nibble1) {
         case 0x0: 
             switch(nibble2) {
-                case 0x0: NOP();
+                case 0x0: return NOP();
                 break;
-                case 0x1: LD_BC();
+                case 0x1: return LD_BC();
                 break;
-                case 0x2: LD_BC_A();
+                case 0x2: return LD_BC_A();
                 break;
-                case 0x3: INC_BC();
+                case 0x3: return INC_BC();
                 break;
-                case 0x4: INC_B();
+                case 0x4: return INC_B();
                 break;
-                case 0x5: DEC_B();
+                case 0x5: return DEC_B();
                 break;
-                case 0x6: LD_B();
+                case 0x6: return LD_B();
                 break;
-                case 0x7: RLCA();
+                case 0x7: return RLCA();
                 break;
-                case 0x8: LD_16BIT_SP();
+                case 0x8: return LD_16BIT_SP();
                 break;
-                case 0x9: ADD_HL_BC();
+                case 0x9: return ADD_HL_BC();
                 break;
-                case 0xA: LD_A_BC();
+                case 0xA: return LD_A_BC();
                 break;
-                case 0xB: DEC_BC();
+                case 0xB: return DEC_BC();
                 break;
-                case 0xC: INC_C();
+                case 0xC: return INC_C();
                 break;
-                case 0xD: DEC_C();
+                case 0xD: return DEC_C();
                 break;
-                case 0xE: LD_C();
+                case 0xE: return LD_C();
                 break;
-                case 0xF: RRCA();
+                case 0xF: return RRCA();
                 break;
             }
         break;
@@ -135,8 +137,8 @@ int Processor::NOP() {
 // 0x01
 int Processor::LD_BC() {
     
-    uint8_t highByte = fetch(PC);
-    uint8_t lowByte = fetch(PC);
+    uint8_t highByte = fetch();
+    uint8_t lowByte = fetch();
     
     uint16_t word = (highByte << 8) | lowByte;
     
@@ -205,7 +207,7 @@ int Processor::DEC_B() {
 // 0x06
 int Processor::LD_B() {
     
-    uint8_t byte = fetch(PC);
+    uint8_t byte = fetch();
     uint8_t C = get8BitRegisters(BC)[1];
 
     BC = (byte << 8) | C;
@@ -238,8 +240,8 @@ int Processor::RLCA() {
 // 0x08
 int Processor::LD_16BIT_SP() {
 
-    uint8_t addressHigh = fetch(PC);
-    uint8_t addressLow = fetch(PC);
+    uint8_t addressHigh = fetch();
+    uint8_t addressLow = fetch();
     uint16_t address = (addressHigh << 8) | addressLow;
 
     array<uint8_t, 2> stackPointer = get8BitRegisters(SP);
@@ -335,7 +337,7 @@ int Processor::DEC_C() {
 int Processor::LD_C() {
 
     uint8_t B = get8BitRegisters(BC)[0];
-    uint8_t C = fetch(PC);
+    uint8_t C = fetch();
 
     BC = (B << 8) | C;
 
