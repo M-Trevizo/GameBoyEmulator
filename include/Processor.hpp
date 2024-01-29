@@ -76,6 +76,38 @@ class Processor {
         int LD_C();
         // 0x0F
         int RRCA();
+        // 0x10
+        int STOP();
+        // 0x11
+        int LD_DE();
+        // 0x12
+        int LD_DE_A();
+        // 0x13
+        int INC_DE();
+        // 0x14
+        int INC_D();
+        // 0x15
+        int DEC_D();
+        // 0x16
+        int LD_D();
+        // 0x17
+        int RLA();
+        // 0x18
+        int JR();
+        // 0x19
+        int ADD_HL_DE();
+        // 0x1A
+        int LD_A_DE();
+        // 0x1B
+        int DEC_DE();
+        // 0x1C
+        int INC_E();
+        // 0x1D
+        int DEC_E();
+        // 0x1E
+        int LD_E();
+        // 0x1F
+        int RRA();
 
 };
 

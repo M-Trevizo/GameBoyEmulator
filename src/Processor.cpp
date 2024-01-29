@@ -121,6 +121,26 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
         break;
         case 0x1:
             switch(nibble2) {
+                case 0x0: return STOP();
+                case 0x1: return LD_DE();
+                case 0x2: return LD_DE_A();
+                case 0x3: return INC_DE();
+                case 0x4: return INC_D();
+                case 0x5: return DEC_D();
+                case 0x6: return LD_D();
+                case 0x7: return RLA();
+                case 0x8: return JR();
+                case 0x9: return ADD_HL_DE();
+                case 0xA: return LD_A_DE();
+                case 0xB: return DEC_DE();
+                case 0xC: return INC_E();
+                case 0xD: return DEC_E();
+                case 0xE: return LD_E();
+                case 0xF: return RRA();
+            }
+        break;
+        case 0x2:
+            switch(nibble2) {
                 case 0x0: ;
                 break;
             }
@@ -359,6 +379,237 @@ int Processor::RRCA() {
     }
     else {
         AF &= C_FLAG;
+    }
+
+    return 1;
+}
+
+// 0x10
+int Processor::STOP() {
+    // Not sure if this opCode should do anything
+    return 1;
+}
+
+// 0x11
+int Processor::LD_DE() {
+    
+    uint8_t highByte = fetch();
+    uint8_t lowByte = fetch();
+    
+    uint16_t word = (highByte << 8) | lowByte;
+    
+    DE = word;
+
+    return 3;
+}
+
+// 0x12
+int Processor::LD_DE_A() {
+
+    uint8_t A = get8BitRegisters(AF)[0];
+    memory[DE] = A;
+
+    return 2;
+}
+
+// 0x13
+int Processor::INC_DE() {
+
+    DE++;
+
+    return 2;
+}
+
+// 0x14
+int Processor::INC_D() {
+
+    uint8_t D = get8BitRegisters(DE)[0];
+    D++;
+
+    uint8_t lowNibble = D & 0x0F;
+    if(D == 0) {
+        AF &= Z_FLAG;
+    }
+    if(lowNibble == 0) {
+        AF &= H_FLAG;
+    }
+    AF &= ~N_FLAG;
+    
+    DE = (D << 8) | DE;
+
+    return 1;
+}
+
+// 0x15
+int Processor::DEC_D() {
+
+    uint8_t D = get8BitRegisters(DE)[0];
+    D--;
+
+    uint8_t lowNibble = D & 0x0F;
+    if(D == 0) {
+        AF &= Z_FLAG;
+    }
+    if(lowNibble == 0xF) {
+        AF &= H_FLAG;
+    }
+    AF &= N_FLAG;
+
+    DE = (D << 8) | DE;
+    
+    return 1;
+}
+
+// 0x16
+int Processor::LD_D() {
+
+    uint8_t byte = fetch();
+    uint8_t E = get8BitRegisters(DE)[1];
+
+    DE = (byte << 8) | E;
+
+    return 2;
+}
+
+// 0x17
+int Processor::RLA() {
+    
+    uint8_t A = get8BitRegisters(AF)[0];
+    uint8_t bit = A >> 7;
+
+    A = (A << 1) | (C_FLAG >> 4);
+    AF = (A << 8) | AF;
+
+    // Unset ZNH flags
+    AF &= ~Z_FLAG;
+    AF &= ~N_FLAG;
+    AF &= ~H_FLAG;
+
+    // Set C flag appropriatly
+    if(bit) {
+        AF &= C_FLAG;
+    }
+    else {
+        AF &= ~C_FLAG;
+    }
+
+    return 1;
+}
+
+// 0x18
+int Processor::JR() {
+
+    int8_t byte = fetch();
+    PC += byte;
+
+    return 3;
+}
+
+// 0x19
+int Processor::ADD_HL_DE() {
+
+    if((int)HL + (int)DE > 0xFFFF) {
+        AF &= C_FLAG;
+    }
+    if((int)HL + (int)DE > 0xFFF) {
+        AF &= H_FLAG;
+    }
+    AF &= ~N_FLAG;
+
+    HL += DE;
+
+    return 2;
+}
+
+// 0x1A
+int Processor::LD_A_DE() {
+
+    uint8_t A = get8BitRegisters(AF)[0];
+    A = memory[DE];
+    
+    AF = (A << 8) | AF;
+
+    return 2;
+}
+
+// 0x1B
+int Processor::DEC_DE() {
+
+    DE--;
+
+    return 2;
+}
+
+// 0x1C
+int Processor::INC_E() {
+    
+    array<uint8_t, 2> registers = get8BitRegisters(DE);
+    uint8_t D = registers[0];
+    uint8_t E = registers[1];
+    E++;
+
+    uint8_t lowNibble = E & 0x0F;
+    if(E == 0) {
+        AF &= Z_FLAG;
+    }
+    if(lowNibble == 0) {
+        AF &= H_FLAG;
+    }
+    AF &= ~N_FLAG;
+    
+    DE = (D << 8) | E;
+
+    return 1;
+}
+
+// 0x1D
+int Processor::DEC_E() {
+
+    array<uint8_t, 2> registers = get8BitRegisters(DE);
+    uint8_t D = registers[0];
+    uint8_t E = registers[1];
+    E--;
+
+    uint8_t lowNibble = E & 0x0F;
+    if(E == 0) {
+        AF &= Z_FLAG;
+    }
+    if(lowNibble == 0) {
+        AF &= H_FLAG;
+    }
+    AF &= N_FLAG;
+    
+    DE = (D << 8) | E;
+
+    return 1;
+}
+
+// 0x1E
+int Processor::LD_E() {
+
+    uint8_t D = get8BitRegisters(DE)[0];
+    uint8_t E = fetch();
+
+    DE = (D << 8) | E;
+
+    return 2;
+}
+
+// 0x1F
+int Processor::RRA() {
+
+    uint8_t A = get8BitRegisters(AF)[0];
+    uint8_t bit = A & 0x01;
+
+    A = A >> 1;
+    A |= (C_FLAG << 3);
+    AF = (A << 8) | AF;
+
+    if(bit) {
+        AF &= C_FLAG;
+    }
+    else {
+        AF &= ~C_FLAG;
     }
 
     return 1;
