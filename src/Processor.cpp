@@ -614,3 +614,45 @@ int Processor::RRA() {
 
     return 1;
 }
+
+// Increment high byte of 16-bit register
+int Processor::INC_R8_H(uint16_t reg) {
+    
+    uint8_t eightBitRegister = get8BitRegisters(reg)[0];
+    eightBitRegister++;
+
+    uint8_t lowNibble = eightBitRegister & 0x0F;
+    if(eightBitRegister == 0) {
+        AF &= Z_FLAG;
+    }
+    if(lowNibble == 0) {
+        AF &= H_FLAG;
+    }
+    AF &= ~N_FLAG;
+    
+    reg = (eightBitRegister << 8) | reg;
+
+    return 1;
+}
+
+// Increment low byte of 16-bit register
+int Processor::INC_R8_L(uint16_t reg) {
+
+    array<uint8_t, 2> registers = get8BitRegisters(reg);
+    uint8_t highByte = registers[0];
+    uint8_t lowByte = registers[1];
+    lowByte++;
+
+    uint8_t lowNibble = lowByte & 0x0F;
+    if(lowByte == 0) {
+        AF &= Z_FLAG;
+    }
+    if(lowNibble == 0) {
+        AF &= H_FLAG;
+    }
+    AF &= ~N_FLAG;
+    
+    reg = (highByte << 8) | lowByte;
+
+    return 1;
+}

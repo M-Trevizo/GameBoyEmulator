@@ -109,6 +109,11 @@ class Processor {
         // 0x1F
         int RRA();
 
+        // 8-bit High Increment
+        int INC_R8_H(uint16_t reg);
+        // 8-bit Low Increment
+        int INC_R8_L(uint16_t reg);
+
 };
 
 #endif
