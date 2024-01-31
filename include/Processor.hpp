@@ -8,10 +8,21 @@ const uint16_t MEM_SIZE = 65535;
 const uint16_t VRAM_START = 0x8000;
 const int M_CYCLES_PER_FRAME = 17476;                           // Based on a 60 FPS limit.
 int CYCLES_EXECUTED = 0;
-const uint8_t Z_FLAG = 0x0080;
-const uint8_t N_FLAG = 0x0040;
-const uint8_t H_FLAG = 0x0020;
-const uint8_t C_FLAG = 0x0010;
+const uint8_t Z_FLAG = 0x80;
+const uint8_t N_FLAG = 0x40;
+const uint8_t H_FLAG = 0x20;
+const uint8_t C_FLAG = 0x10;
+
+union Register {
+    
+    uint16_t word;
+    
+    struct {
+        uint8_t high;
+        uint8_t low;
+    };
+
+};
 
 class Processor {
 
@@ -20,10 +31,10 @@ class Processor {
         uint8_t memory[MEM_SIZE];
 
         // General Registers
-        uint16_t AF = 0;
-        uint16_t BC = 0;
-        uint16_t DE = 0;
-        uint16_t HL = 0;
+        Register AF;
+        Register BC;
+        Register DE;
+        Register HL;
 
         // Hardware Registers
         uint8_t LCDC = 0;                                      // LCD Control
@@ -32,7 +43,7 @@ class Processor {
         int PC;
 
         // Stack Pointer
-        int SP;
+        Register SP;
 
         bool isRunning = false;
 
@@ -46,74 +57,47 @@ class Processor {
         
         // 0x00
         int NOP();
-        // 0x01
-        int LD_BC();
-        // 0x02
-        int LD_BC_A();
-        // 0x03
-        int INC_BC();
-        //0x04
-        int INC_B();
-        // 0x05
-        int DEC_B();
-        // 0x06
-        int LD_B();
-        // 0x07
-        int RLCA();
-        // 0x08
-        int LD_16BIT_SP();
-        // 0x09
-        int ADD_HL_BC();
-        // 0x0A
-        int LD_A_BC();
-        // 0x0B
-        int DEC_BC();
-        // 0x0C
-        int INC_C();
-        // 0x0D
-        int DEC_C();
-        // 0x0E
-        int LD_C();
-        // 0x0F
-        int RRCA();
         // 0x10
         int STOP();
-        // 0x11
-        int LD_DE();
-        // 0x12
-        int LD_DE_A();
-        // 0x13
-        int INC_DE();
-        // 0x14
-        int INC_D();
-        // 0x15
-        int DEC_D();
-        // 0x16
-        int LD_D();
-        // 0x17
-        int RLA();
         // 0x18
         int JR();
-        // 0x19
-        int ADD_HL_DE();
-        // 0x1A
-        int LD_A_DE();
-        // 0x1B
-        int DEC_DE();
-        // 0x1C
-        int INC_E();
-        // 0x1D
-        int DEC_E();
-        // 0x1E
-        int LD_E();
-        // 0x1F
+        
+        // Load instructions
+        // 16-bit Loads
+        int LD_16BIT(Register reg);
+        int LD_16BIT_A(Register reg);
+        // 8-bit Loads
+        int LD_8BIT_H(Register reg);
+        int LD_8BIT_L(Register reg);
+        int LD_A_16BIT(Register reg);
+        
+        // Arithmetic instructions
+        // Add instructions
+        int ADD_HL_R16(Register reg);
+
+        // Inc/Dec instructions
+        // 16-bit Increment
+        int INC_16BIT(Register reg);
+        // 16-bit Decrement
+        int DEC_16BIT(Register reg);
+        // 8-bit High Increment
+        int INC_8BIT_H(Register reg);
+        // 8-bit Low Increment
+        int INC_8BIT_L(Register reg);
+        // 8-bit High Decrement
+        int DEC_8BIT_H(Register reg);
+        // 8-bit Low Decrement
+        int DEC_8BIT_L(Register reg);
+        
+        // Bit operations
+        int RLCA();
+        int RRCA();
+        int RLA();
         int RRA();
 
-        // 8-bit High Increment
-        int INC_R8_H(uint16_t reg);
-        // 8-bit Low Increment
-        int INC_R8_L(uint16_t reg);
+        // Stack(SP) Operations
 
+        int LD_16BIT_SP();
 };
 
 #endif
