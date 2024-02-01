@@ -10,7 +10,7 @@ using namespace std;
 Processor::Processor(Cartridge cartridge, uint8_t cartType) {
 
     for(int i = 0; i < VRAM_START; i++) {
-        cartridge.cartROM[i] = memory[i];
+        memory[i] = cartridge.cartROM[i];
     }
 
     PC = 0x0100;
@@ -86,7 +86,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
         case 0x0: 
             switch(nibble2) {
                 case 0x0: return NOP();
-                case 0x1: return LD_16BIT(BC);
+                case 0x1: return LD_16BIT(BC.word);
                 case 0x2: return LD_16BIT_A(BC);
                 case 0x3: return INC_16BIT(BC);
                 case 0x4: return INC_8BIT_H(BC);
@@ -106,7 +106,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
         case 0x1:
             switch(nibble2) {
                 case 0x0: return STOP();
-                case 0x1: return LD_16BIT(DE);
+                case 0x1: return LD_16BIT(DE.word);
                 case 0x2: return LD_16BIT_A(DE);
                 case 0x3: return INC_16BIT(DE);
                 case 0x4: return INC_8BIT_H(DE);
@@ -156,11 +156,12 @@ int Processor::JR() {
 }
 
 // 16-bit Loads
-int Processor::LD_16BIT(Register reg) {
+int Processor::LD_16BIT(uint16_t& reg) {
 
-    reg.high = fetch();
-    reg.low = fetch();
+    uint8_t high = fetch();
+    uint8_t low = fetch();
     
+    reg = (high << 8) | low;
     return 3;
 }
 
