@@ -7,7 +7,7 @@
 
 using namespace std;
 
-Processor::Processor(Cartridge cartridge, uint8_t cartType = 0) {
+Processor::Processor(Cartridge cartridge, uint8_t cartType) {
 
     for(int i = 0; i < VRAM_START; i++) {
         cartridge.cartROM[i] = memory[i];
@@ -45,8 +45,8 @@ void Processor::bootSequence(Cartridge cart) {
 // Returns array<uint8_t, 2> containing high and low byte of a given 16-bit register.
 array<uint8_t, 2> Processor::get8BitRegisters(uint16_t r) {
 
-    uint8_t highMask = 0xFF00;
-    uint8_t lowMask = 0x00FF;
+    uint16_t highMask = 0xFF00;
+    uint16_t lowMask = 0x00FF;
 
     uint8_t highRegister = (r & highMask) >> 8;
     uint8_t lowRegister = r & lowMask;
@@ -131,6 +131,8 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
         break;
         default: cout << "Instruction not recognized." << endl;
     }
+
+    return -1;
 }
 
 // 0x00

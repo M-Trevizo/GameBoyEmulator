@@ -7,7 +7,7 @@
 const uint16_t MEM_SIZE = 65535;
 const uint16_t VRAM_START = 0x8000;
 const int M_CYCLES_PER_FRAME = 17476;                           // Based on a 60 FPS limit.
-int CYCLES_EXECUTED = 0;
+//int CYCLES_EXECUTED = 0;
 const uint8_t Z_FLAG = 0x80;
 const uint8_t N_FLAG = 0x40;
 const uint8_t H_FLAG = 0x20;
