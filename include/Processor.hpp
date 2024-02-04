@@ -16,10 +16,10 @@ const uint8_t C_FLAG = 0x10;
 union Register {
     
     uint16_t word;
-    // TODO: switch high and low
+    
     struct {
-        uint8_t high;
         uint8_t low;
+        uint8_t high;
     };
 
 };
@@ -64,22 +64,22 @@ class Processor {
         
         // Load instructions
         // 16-bit Loads
-        int LD_16BIT(uint16_t& reg);
-        int LD_16BIT_A(Register reg);
+        int LD_16BIT(uint16_t &reg);
+        int LD_16BIT_A(uint16_t &reg);
         // 8-bit Loads
-        int LD_8BIT_H(Register reg);
-        int LD_8BIT_L(Register reg);
-        int LD_A_16BIT(Register reg);
+        int LD_8BIT_H(uint8_t &reg);
+        int LD_8BIT_L(uint8_t &reg);
+        int LD_A_16BIT(uint16_t &reg);
         
         // Arithmetic instructions
         // Add instructions
-        int ADD_HL_R16(Register reg);
+        int ADD_HL_R16(uint16_t &reg);
 
         // Inc/Dec instructions
         // 16-bit Increment
-        int INC_16BIT(Register reg);
+        int INC_16BIT(uint16_t &reg);
         // 16-bit Decrement
-        int DEC_16BIT(Register reg);
+        int DEC_16BIT(uint16_t &reg);
         // 8-bit High Increment
         int INC_8BIT_H(Register reg);
         // 8-bit Low Increment
