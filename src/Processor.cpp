@@ -87,19 +87,19 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
             switch(nibble2) {
                 case 0x0: return NOP();
                 case 0x1: return LD_16BIT(BC.word);
-                case 0x2: return LD_16BIT_A(BC);
-                case 0x3: return INC_16BIT(BC);
+                case 0x2: return LD_16BIT_A(BC.word);
+                case 0x3: return INC_16BIT(BC.word);
                 case 0x4: return INC_8BIT_H(BC);
                 case 0x5: return DEC_8BIT_H(BC);
-                case 0x6: return LD_8BIT_H(BC);
+                case 0x6: return LD_8BIT_H(BC.high);
                 case 0x7: return RLCA();
                 case 0x8: return LD_16BIT_SP();
-                case 0x9: return ADD_HL_R16(BC);
-                case 0xA: return LD_A_16BIT(BC);
-                case 0xB: return DEC_16BIT(BC);
+                case 0x9: return ADD_HL_R16(BC.word);
+                case 0xA: return LD_A_16BIT(BC.word);
+                case 0xB: return DEC_16BIT(BC.word);
                 case 0xC: return INC_8BIT_L(BC);
                 case 0xD: return DEC_8BIT_L(BC);
-                case 0xE: return LD_8BIT_L(BC);
+                case 0xE: return LD_8BIT_L(BC.low);
                 case 0xF: return RRCA();
             }
         break;
@@ -107,19 +107,19 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
             switch(nibble2) {
                 case 0x0: return STOP();
                 case 0x1: return LD_16BIT(DE.word);
-                case 0x2: return LD_16BIT_A(DE);
-                case 0x3: return INC_16BIT(DE);
+                case 0x2: return LD_16BIT_A(DE.word);
+                case 0x3: return INC_16BIT(DE.word);
                 case 0x4: return INC_8BIT_H(DE);
                 case 0x5: return DEC_8BIT_H(DE);
-                case 0x6: return LD_8BIT_H(DE);
+                case 0x6: return LD_8BIT_H(DE.high);
                 case 0x7: return RLA();
                 case 0x8: return JR();
-                case 0x9: return ADD_HL_R16(DE);
-                case 0xA: return LD_A_16BIT(DE);
-                case 0xB: return DEC_16BIT(DE);
+                case 0x9: return ADD_HL_R16(DE.word);
+                case 0xA: return LD_A_16BIT(DE.word);
+                case 0xB: return DEC_16BIT(DE.word);
                 case 0xC: return INC_8BIT_L(DE);
                 case 0xD: return DEC_8BIT_L(DE);
-                case 0xE: return LD_8BIT_L(DE);
+                case 0xE: return LD_8BIT_L(DE.low);
                 case 0xF: return RRA();
             }
         break;
@@ -156,7 +156,7 @@ int Processor::JR() {
 }
 
 // 16-bit Loads
-int Processor::LD_16BIT(uint16_t& reg) {
+int Processor::LD_16BIT(uint16_t &reg) {
 
     uint8_t high = fetch();
     uint8_t low = fetch();
@@ -165,50 +165,50 @@ int Processor::LD_16BIT(uint16_t& reg) {
     return 3;
 }
 
-int Processor::LD_16BIT_A(Register reg) {
+int Processor::LD_16BIT_A(uint16_t &reg) {
     
     uint8_t A = AF.high;
-    memory[BC.word] = A;
+    memory[reg] = A;
 
     return 2;
 }
 
 // 8-bit Loads
 // High
-int Processor::LD_8BIT_H(Register reg) {
+int Processor::LD_8BIT_H(uint8_t &regHigh) {
     
-    reg.high = fetch();
+    regHigh = fetch();
 
     return 2;
 }
 
 // Low
-int Processor::LD_8BIT_L(Register reg) {
+int Processor::LD_8BIT_L(uint8_t &regLow) {
 
-    reg.low = fetch();
+    regLow = fetch();
 
     return 2;
 }
 
-int Processor::LD_A_16BIT(Register reg) {
+int Processor::LD_A_16BIT(uint16_t &reg) {
 
-    AF.high = memory[BC.word];
+    AF.high = memory[reg];
 
     return 2;
 }
 
 // 16-bit Increment
-int Processor::INC_16BIT(Register reg) {
+int Processor::INC_16BIT(uint16_t &reg) {
 
-    reg.word++;
+    reg++;
 
     return 2;
 }
 
 // 16-bit Decrement
-int Processor::DEC_16BIT(Register reg) {
+int Processor::DEC_16BIT(uint16_t &reg) {
     
-    reg.word--;
+    reg--;
 
     return 2;
 }
@@ -282,17 +282,17 @@ int Processor::DEC_8BIT_L(Register reg) {
 }
 
 // Add Instructions
-int Processor::ADD_HL_R16(Register reg) {
+int Processor::ADD_HL_R16(uint16_t &reg) {
 
-    if((int)HL.word + (int)reg.word> 0xFFFF) {
-        AF.low &= C_FLAG;
+    if((int)HL.word + (int)reg > 0xFFFF) {
+        AF.low |= C_FLAG;
     }
-    if((int)HL.word + (int)DE.word > 0xFFF) {
-        AF.low &= H_FLAG;
+    if((int)HL.word + (int)reg > 0xFFF) {
+        AF.low |= H_FLAG;
     }
     AF.low &= ~N_FLAG;
 
-    HL.word += reg.word;
+    HL.word += reg;
 
     return 2;
 }
