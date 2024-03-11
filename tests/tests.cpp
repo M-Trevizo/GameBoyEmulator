@@ -100,31 +100,27 @@ TEST_CASE("Testing Arithmetic Instructions") {
     }
 
     SUBCASE("Testing 8-Bit Increments and Decrements") {
-        processor.BC.high = 0x10;
-        CHECK(processor.INC_8BIT_H(processor.BC.high) == 1);
-        CHECK(processor.BC.high == 0x11);
-        CHECK(processor.DEC_8BIT_H(processor.BC.high) == 1);
-        CHECK(processor.BC.high == 0x10);
 
-        processor.BC.low = 0x10;
-        CHECK(processor.INC_8BIT_L(processor.BC.low) == 1);
+        processor.BC.word = 0x1010;
+        CHECK(processor.INC_8BIT(processor.BC.low) == 1);
+        CHECK(processor.INC_8BIT(processor.BC.high) == 1);
         CHECK(processor.BC.low == 0x11);
-        CHECK(processor.DEC_8BIT_H(processor.BC.low) == 1);
-        CHECK(processor.BC.low == 0x10);
+        CHECK(processor.BC.high == 0x11);
+        
 
-        SUBCASE("Testing flags") {
+        SUBCASE("Testing flags for Increment Instruction") {
 
             SUBCASE("Test Z flag is set") {
                 processor.AF.low = 0x00;
                 processor.BC.low = 0xFF;
-                processor.INC_8BIT_L(processor.BC.low);
+                processor.INC_8BIT(processor.BC.low);
                 CHECK(processor.BC.low == 0);
                 processor.AF.low &= Z_FLAG;
                 CHECK(processor.AF.low == Z_FLAG);
 
                 processor.AF.low = 0x00;
                 processor.BC.high = 0xFF;
-                processor.INC_8BIT_H(processor.BC.high);
+                processor.INC_8BIT(processor.BC.high);
                 CHECK(processor.BC.high == 0);
                 processor.AF.low &= Z_FLAG;
                 CHECK(processor.AF.low == Z_FLAG);
@@ -134,7 +130,7 @@ TEST_CASE("Testing Arithmetic Instructions") {
                 // Test that 8 bit low inc sets H flag
                 processor.AF.low = 0x00;
                 processor.BC.low = 0x0F;
-                processor.INC_8BIT_L(processor.BC.low);
+                processor.INC_8BIT(processor.BC.low);
                 CHECK(processor.BC.low == 0x10);
                 processor.AF.low &= H_FLAG;
                 CHECK(processor.AF.low == H_FLAG);
@@ -142,7 +138,7 @@ TEST_CASE("Testing Arithmetic Instructions") {
                 // Test that 8 bit high inc sets H flag
                 processor.AF.low = 0x00;
                 processor.BC.high = 0x0F;
-                processor.INC_8BIT_H(processor.BC.high);
+                processor.INC_8BIT(processor.BC.high);
                 CHECK(processor.BC.low == 0x10);
                 processor.AF.low &= H_FLAG;
                 CHECK(processor.AF.low == H_FLAG);
@@ -151,15 +147,53 @@ TEST_CASE("Testing Arithmetic Instructions") {
             SUBCASE("Test N flag is unset") {
                 processor.AF.low = 0x00;
                 processor.BC.low = 0x01;
-                processor.INC_8BIT_L(processor.BC.low);
+                processor.INC_8BIT(processor.BC.low);
                 processor.AF.low &= N_FLAG;
                 CHECK(processor.AF.low == 0x0);
 
                 processor.AF.low = 0x00;
                 processor.BC.high = 0x01;
-                processor.INC_8BIT_H(processor.BC.high);
+                processor.INC_8BIT(processor.BC.high);
                 processor.AF.low &= N_FLAG;
                 CHECK(processor.AF.low == 0x0);
+            }
+        }
+
+        SUBCASE("Testing Flags for Decrement Instruction") {
+            // TODO: write these tests
+            processor.BC.word = 0x1010;
+            CHECK(processor.DEC_8BIT(processor.BC.low) == 1);
+            CHECK(processor.DEC_8BIT(processor.BC.high) == 1);
+            CHECK(processor.BC.low == 0x0F);
+            CHECK(processor.BC.high == 0x0F);
+        }
+
+        SUBCASE("Testing flags for Decrement Instruction") {
+
+            SUBCASE("Test Z flag is set") {
+                processor.AF.low = 0x00;
+                processor.BC.low = 0x01;
+                processor.DEC_8BIT(processor.BC.low);
+                CHECK(processor.BC.low == 0);
+                processor.AF.low &= Z_FLAG;
+                CHECK(processor.AF.low == Z_FLAG);
+            }
+
+            SUBCASE("Test H flag is set") {
+                processor.AF.low = 0x00;
+                processor.BC.low = 0x10;
+                processor.DEC_8BIT(processor.BC.low);
+                CHECK(processor.BC.low == 0x0F);
+                processor.AF.low &= H_FLAG;
+                CHECK(processor.AF.low == H_FLAG);
+            }
+
+            SUBCASE("Test N flag is set") {
+                processor.AF.low = 0x00;
+                processor.BC.low = 0x01;
+                processor.DEC_8BIT(processor.BC.low);
+                processor.AF.low &= N_FLAG;
+                CHECK(processor.AF.low == N_FLAG);
             }
         }
     }
