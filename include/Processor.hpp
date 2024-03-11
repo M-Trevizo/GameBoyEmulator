@@ -82,10 +82,8 @@ class Processor {
         int DEC_16BIT(uint16_t &reg);
         // 8-bit Increment
         int INC_8BIT(uint8_t &reg);
-        // 8-bit High Decrement
-        int DEC_8BIT_H(uint8_t &reg);
-        // 8-bit Low Decrement
-        int DEC_8BIT_L(uint8_t &reg);
+        // 8-bit Decrement
+        int DEC_8BIT(uint8_t &reg);
         
         // Bit operations
         int RLCA();

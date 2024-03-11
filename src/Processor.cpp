@@ -90,7 +90,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0x2: return LD_16BIT_A(BC.word);
                 case 0x3: return INC_16BIT(BC.word);
                 case 0x4: return INC_8BIT(BC.high);
-                case 0x5: return DEC_8BIT_H(BC.high);
+                case 0x5: return DEC_8BIT(BC.high);
                 case 0x6: return LD_8BIT_H(BC.high);
                 case 0x7: return RLCA();
                 case 0x8: return LD_16BIT_SP();
@@ -98,7 +98,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0xA: return LD_A_16BIT(BC.word);
                 case 0xB: return DEC_16BIT(BC.word);
                 case 0xC: return INC_8BIT(BC.low);
-                case 0xD: return DEC_8BIT_L(BC.low);
+                case 0xD: return DEC_8BIT(BC.low);
                 case 0xE: return LD_8BIT_L(BC.low);
                 case 0xF: return RRCA();
             }
@@ -110,7 +110,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0x2: return LD_16BIT_A(DE.word);
                 case 0x3: return INC_16BIT(DE.word);
                 case 0x4: return INC_8BIT(DE.high);
-                case 0x5: return DEC_8BIT_H(DE.high);
+                case 0x5: return DEC_8BIT(DE.high);
                 case 0x6: return LD_8BIT_H(DE.high);
                 case 0x7: return RLA();
                 case 0x8: return JR();
@@ -118,7 +118,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0xA: return LD_A_16BIT(DE.word);
                 case 0xB: return DEC_16BIT(DE.word);
                 case 0xC: return INC_8BIT(DE.low);
-                case 0xD: return DEC_8BIT_L(DE.low);
+                case 0xD: return DEC_8BIT(DE.low);
                 case 0xE: return LD_8BIT_L(DE.low);
                 case 0xF: return RRA();
             }
@@ -229,8 +229,8 @@ int Processor::INC_8BIT(uint8_t &reg) {
     return 1;
 }
 
-// Decrement high byte of 16-bit register
-int Processor::DEC_8BIT_H(uint8_t &reg) {
+// Decrement 8-bit register
+int Processor::DEC_8BIT(uint8_t &reg) {
 
     reg--;
 
@@ -243,23 +243,6 @@ int Processor::DEC_8BIT_H(uint8_t &reg) {
     }
     AF.low |= N_FLAG;
     
-    return 1;
-}
-
-// Decrement low byte of 16-bit register
-int Processor::DEC_8BIT_L(uint8_t &reg) {
-
-    reg--;
-
-    uint8_t lowNibble = reg & 0x0F;
-    if(reg == 0) {
-        AF.low |= Z_FLAG;
-    }
-    if(lowNibble == 0) {
-        AF.low |= H_FLAG;
-    }
-    AF.low |= N_FLAG;
-
     return 1;
 }
 
