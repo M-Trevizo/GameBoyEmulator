@@ -89,16 +89,16 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0x1: return LD_16BIT(BC.word);
                 case 0x2: return LD_16BIT_A(BC.word);
                 case 0x3: return INC_16BIT(BC.word);
-                case 0x4: return INC_8BIT_H(BC);
-                case 0x5: return DEC_8BIT_H(BC);
+                case 0x4: return INC_8BIT(BC.high);
+                case 0x5: return DEC_8BIT_H(BC.high);
                 case 0x6: return LD_8BIT_H(BC.high);
                 case 0x7: return RLCA();
                 case 0x8: return LD_16BIT_SP();
                 case 0x9: return ADD_HL_R16(BC.word);
                 case 0xA: return LD_A_16BIT(BC.word);
                 case 0xB: return DEC_16BIT(BC.word);
-                case 0xC: return INC_8BIT_L(BC);
-                case 0xD: return DEC_8BIT_L(BC);
+                case 0xC: return INC_8BIT(BC.low);
+                case 0xD: return DEC_8BIT_L(BC.low);
                 case 0xE: return LD_8BIT_L(BC.low);
                 case 0xF: return RRCA();
             }
@@ -109,16 +109,16 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0x1: return LD_16BIT(DE.word);
                 case 0x2: return LD_16BIT_A(DE.word);
                 case 0x3: return INC_16BIT(DE.word);
-                case 0x4: return INC_8BIT_H(DE);
-                case 0x5: return DEC_8BIT_H(DE);
+                case 0x4: return INC_8BIT(DE.high);
+                case 0x5: return DEC_8BIT_H(DE.high);
                 case 0x6: return LD_8BIT_H(DE.high);
                 case 0x7: return RLA();
                 case 0x8: return JR();
                 case 0x9: return ADD_HL_R16(DE.word);
                 case 0xA: return LD_A_16BIT(DE.word);
                 case 0xB: return DEC_16BIT(DE.word);
-                case 0xC: return INC_8BIT_L(DE);
-                case 0xD: return DEC_8BIT_L(DE);
+                case 0xC: return INC_8BIT(DE.low);
+                case 0xD: return DEC_8BIT_L(DE.low);
                 case 0xE: return LD_8BIT_L(DE.low);
                 case 0xF: return RRA();
             }
@@ -213,34 +213,16 @@ int Processor::DEC_16BIT(uint16_t &reg) {
     return 2;
 }
 
-// Increment high byte of 16-bit register
-int Processor::INC_8BIT_H(Register reg) {
-    
-    reg.high++;
+// Increment 8-bit register
+int Processor::INC_8BIT(uint8_t &reg) {
+    reg++;
 
-    uint8_t lowNibble = reg.high & 0x0F;
-    if(reg.high == 0) {
-        AF.low &= Z_FLAG;
+    uint8_t lowNibble = reg & 0x0F;
+    if(reg == 0) {
+        AF.low |= Z_FLAG;
     }
     if(lowNibble == 0) {
-        AF.low &= H_FLAG;
-    }
-    AF.low &= ~N_FLAG;
-
-    return 1;
-}
-
-// Increment low byte of 16-bit register
-int Processor::INC_8BIT_L(Register reg) {
-
-    reg.low++;
-
-    uint8_t lowNibble = reg.low & 0x0F;
-    if(reg.low == 0) {
-        AF.low &= Z_FLAG;
-    }
-    if(lowNibble == 0) {
-        AF.low &= H_FLAG;
+        AF.low |= H_FLAG;
     }
     AF.low &= ~N_FLAG;
 
@@ -248,35 +230,35 @@ int Processor::INC_8BIT_L(Register reg) {
 }
 
 // Decrement high byte of 16-bit register
-int Processor::DEC_8BIT_H(Register reg) {
+int Processor::DEC_8BIT_H(uint8_t &reg) {
 
-    reg.high--;
+    reg--;
 
-    uint8_t lowNibble = reg.high & 0x0F;
-    if(reg.high == 0) {
-        AF.low &= Z_FLAG;
+    uint8_t lowNibble = reg & 0x0F;
+    if(reg == 0) {
+        AF.low |= Z_FLAG;
     }
     if(lowNibble == 0xF) {
-        AF.low &= H_FLAG;
+        AF.low |= H_FLAG;
     }
-    AF.low &= N_FLAG;
+    AF.low |= N_FLAG;
     
     return 1;
 }
 
 // Decrement low byte of 16-bit register
-int Processor::DEC_8BIT_L(Register reg) {
+int Processor::DEC_8BIT_L(uint8_t &reg) {
 
-    reg.low--;
+    reg--;
 
-    uint8_t lowNibble = reg.low & 0x0F;
-    if(reg.low == 0) {
-        AF.low &= Z_FLAG;
+    uint8_t lowNibble = reg & 0x0F;
+    if(reg == 0) {
+        AF.low |= Z_FLAG;
     }
     if(lowNibble == 0) {
-        AF.low &= H_FLAG;
+        AF.low |= H_FLAG;
     }
-    AF.low &= N_FLAG;
+    AF.low |= N_FLAG;
 
     return 1;
 }
@@ -284,10 +266,10 @@ int Processor::DEC_8BIT_L(Register reg) {
 // Add Instructions
 int Processor::ADD_HL_R16(uint16_t &reg) {
 
-    if((int)HL.word + (int)reg > 0xFFFF) {
+    if(static_cast<int>(HL.word) + static_cast<int>(reg) > 0xFFFF) {
         AF.low |= C_FLAG;
     }
-    if((int)HL.word + (int)reg > 0xFFF) {
+    if(static_cast<int>(HL.word) + static_cast<int>(reg) > 0xFFF) {
         AF.low |= H_FLAG;
     }
     AF.low &= ~N_FLAG;
