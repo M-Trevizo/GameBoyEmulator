@@ -291,4 +291,88 @@ TEST_CASE("Testing Rotate/Shift Bit Instructions") {
             }
         }
     }
+
+    SUBCASE("Testing RLA") {
+        processor.AF.low = 0x0;
+        processor.AF.high = 0x80;
+        processor.RLA();
+        CHECK(processor.AF.high == 0x0);
+        
+        SUBCASE("Testing flags") {
+
+            SUBCASE("Testing Z flag is unset") {
+                processor.AF.low = 0x0;
+                processor.AF.high = 0x80;
+                processor.RLA();
+                processor.AF.low &= Z_FLAG;
+                CHECK(processor.AF.low == 0x0);
+            }
+
+            SUBCASE("Testing N flag is unset") {
+                processor.AF.low = 0x0;
+                processor.AF.high = 0x80;
+                processor.RLA();
+                processor.AF.low &= N_FLAG;
+                CHECK(processor.AF.low == 0x0);
+            }
+
+            SUBCASE("Testing H flag is unset") {
+                processor.AF.low = 0x0;
+                processor.AF.high = 0x80;
+                processor.RLA();
+                processor.AF.low &= H_FLAG;
+                CHECK(processor.AF.low == 0x0);
+            }
+
+            SUBCASE("Testing C flag is set") {
+                processor.AF.low = 0x0;
+                processor.AF.high = 0x80;
+                processor.RLA();
+                processor.AF.low &= C_FLAG;
+                CHECK(processor.AF.low == C_FLAG);
+            }
+        }
+    }
+
+    SUBCASE("Testing RRA") {
+        processor.AF.low = 0x0;
+        processor.AF.high = 0x01;
+        processor.RRA();
+        CHECK(processor.AF.high == 0x0);
+
+        SUBCASE("Testing flags") {
+
+            SUBCASE("Testing Z flag is unset") {
+                processor.AF.low = 0x0;
+                processor.AF.high = 0x01;
+                processor.RRA();
+                processor.AF.low &= Z_FLAG;
+                CHECK(processor.AF.low == 0x0);
+            }
+
+            SUBCASE("Testing N flag is unset") {
+                processor.AF.low = 0x0;
+                processor.AF.high = 0x01;
+                processor.RRA();
+                processor.AF.low &= N_FLAG;
+                CHECK(processor.AF.low == 0x0);
+            }
+
+            SUBCASE("Testing H flag is unset") {
+                processor.AF.low = 0x0;
+                processor.AF.high = 0x01;
+                processor.RRA();
+                processor.AF.low &= H_FLAG;
+                CHECK(processor.AF.low == 0x0);
+            }
+
+            SUBCASE("Testing C flag is set") {
+                processor.AF.low = 0x0;
+                processor.AF.high = 0x01;
+                processor.RRA();
+                processor.AF.low &= C_FLAG;
+                CHECK(processor.AF.low == C_FLAG);
+            }
+        }
+    }
 }
