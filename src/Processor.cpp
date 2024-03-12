@@ -288,7 +288,7 @@ int Processor::RLCA() {
     AF.low &= ~H_FLAG;
 
     if(bit) {
-        AF.low &= C_FLAG;
+        AF.low |= C_FLAG;
     }
     else {
         AF.low &= ~C_FLAG;
@@ -307,7 +307,7 @@ int Processor::RRCA() {
     AF.low &= ~H_FLAG;
 
     if(bit) {
-        AF.low &= C_FLAG;
+        AF.low |= C_FLAG;
     }
     else {
         AF.low &= ~C_FLAG;
