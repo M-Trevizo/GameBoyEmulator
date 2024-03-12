@@ -329,7 +329,7 @@ int Processor::RLA() {
 
     // Set C flag appropriatly
     if(bit) {
-        AF.low &= C_FLAG;
+        AF.low |= C_FLAG;
     }
     else {
         AF.low &= ~C_FLAG;
@@ -350,7 +350,7 @@ int Processor::RRA() {
     AF.low &= ~H_FLAG;
 
     if(bit) {
-        AF.low &= C_FLAG;
+        AF.low |= C_FLAG;
     }
     else {
         AF.low &= ~C_FLAG;
