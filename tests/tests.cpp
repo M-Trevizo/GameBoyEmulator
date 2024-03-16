@@ -36,6 +36,12 @@ TEST_CASE("Testing Load Instructions") {
 
         CHECK(processor.LD_16BIT_A(processor.BC.word) == 2);
         CHECK(processor.memory[processor.BC.word] == 0x12);
+
+        processor.PC = 0x0104;
+        processor.SP.word = 0x1234;
+        CHECK(processor.LD_16BIT_SP() == 5);
+        CHECK(processor.memory[0xCEED] == processor.SP.low);
+        CHECK(processor.memory[0xCEED + 1] == processor.SP.high);
     }
 
     SUBCASE("Testing 8-Bit Loads") {
@@ -374,5 +380,38 @@ TEST_CASE("Testing Rotate/Shift Bit Instructions") {
                 CHECK(processor.AF.low == C_FLAG);
             }
         }
+    }
+}
+
+TEST_CASE("Testing Control/Branch Instructions") {
+
+    SUBCASE("Testing Jump instructions") {
+        
+        SUBCASE("Testing JR instruction") {
+            // Test jump back
+            processor.PC = 0x01DB; // 0xFA, -6
+            CHECK(processor.JR() == 3);
+            CHECK(processor.PC == 0x01D4);
+
+            // Test jump ahead
+            processor.PC = 0x04A1; // 0x67, 106
+            processor.JR();
+            CHECK(processor.PC == 0x0507);
+        }
+
+        SUBCASE("Testing JRNZ instruction") {
+            // Test branch condition
+            processor.AF.low |= Z_FLAG;
+            processor.PC = 0x04AA; // 0x48, 72
+            CHECK(processor.JRNZ() == 3);
+            CHECK(processor.PC == 0x04F1);
+
+            // Test no branch condition
+            processor.AF.low = 0;
+            processor.PC = 0x04AA;
+            CHECK(processor.JRNZ() == 2);
+            CHECK(processor.PC == 0x04AB);
+        }
+
     }
 }
