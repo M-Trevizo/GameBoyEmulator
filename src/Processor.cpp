@@ -125,8 +125,8 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
         break;
         case 0x2:
             switch(nibble2) {
-                case 0x0: ;
-                break;
+                case 0x0: return JRNZ();
+                case 0x1: return LD_16BIT(HL.word);
             }
         break;
         default: cout << "Instruction not recognized." << endl;
@@ -146,13 +146,32 @@ int Processor::STOP() {
     return 1;
 }
 
-// 0x18
+// Branch/Control instructions
+// Jump Relative
 int Processor::JR() {
 
-    int8_t byte = fetch();
-    PC += byte;
+    // Get next byte without incrementing
+    // Have already incremented PC in previous fetch call that read jump opcode.
+    int8_t byte = memory[PC];
+    PC += byte - 1;
 
     return 3;
+}
+
+// Jump Relative if Zero flag is not set
+int Processor::JRNZ() {
+    
+    // Jump if Z flag set
+    if((AF.low & Z_FLAG) == Z_FLAG) {
+        int8_t byte = memory[PC];
+        PC += byte - 1;
+        return 3;
+    }
+
+    // Increment PC if no jump
+    PC++;
+
+    return 2;
 }
 
 // 16-bit Loads
@@ -270,8 +289,8 @@ int Processor::LD_16BIT_SP() {
     uint8_t addressLow = fetch();
     uint16_t address = (addressHigh << 8) | addressLow;
     
-    memory[address] = SP.high;
-    memory[address + 1] = SP.low;
+    memory[address] = SP.low;
+    memory[address + 1] = SP.high;
 
     return 5;
 }

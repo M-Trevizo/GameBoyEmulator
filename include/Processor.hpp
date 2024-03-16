@@ -43,6 +43,7 @@ class Processor {
         int PC;
 
         // Stack Pointer
+        // Not a register, using reg union to get high and low bytes
         Register SP;
 
         bool isRunning = false;
@@ -59,8 +60,9 @@ class Processor {
         int NOP();
         // 0x10
         int STOP();
-        // 0x18
+        // Control/Branch instructions
         int JR();
+        int JRNZ();
         
         // Load instructions
         // 16-bit Loads
@@ -70,6 +72,10 @@ class Processor {
         int LD_8BIT_H(uint8_t &reg);
         int LD_8BIT_L(uint8_t &reg);
         int LD_A_16BIT(uint16_t &reg);
+        // Load A into HL then increment/decrement HL
+        int LD_HL_INC();
+        // Load HL into A then increment/decrement HL
+        int LD_A_INC();
         
         // Arithmetic instructions
         // Add instructions
