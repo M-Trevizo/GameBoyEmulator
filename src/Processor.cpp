@@ -216,6 +216,22 @@ int Processor::LD_A_16BIT(uint16_t &reg) {
     return 2;
 }
 
+int Processor::LD_HL_INC() {
+
+    memory[HL.word] = AF.high;
+    HL.word++;
+
+    return 2;
+}
+
+int Processor::LD_A_INC() {
+
+    AF.high = memory[HL.word];
+    HL.word++;
+
+    return 2;
+}
+
 // 16-bit Increment
 int Processor::INC_16BIT(uint16_t &reg) {
 
