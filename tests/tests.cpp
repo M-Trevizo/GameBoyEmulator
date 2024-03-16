@@ -45,13 +45,12 @@ TEST_CASE("Testing Load Instructions") {
     }
 
     SUBCASE("Testing 8-Bit Loads") {
-        
         processor.PC = 0x0104;
-        CHECK(processor.LD_8BIT_H(processor.BC.high) == 2);
+        CHECK(processor.LD_8BIT(processor.BC.high) == 2);
         CHECK(processor.BC.high == 0xCE);
 
         processor.PC = 0x0104;
-        CHECK(processor.LD_8BIT_L(processor.BC.low) == 2);
+        processor.LD_8BIT(processor.BC.low);
         CHECK(processor.BC.low == 0xCE);
 
         processor.BC.word = 0x0012;
