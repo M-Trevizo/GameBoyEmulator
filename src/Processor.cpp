@@ -91,7 +91,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0x3: return INC_16BIT(BC.word);
                 case 0x4: return INC_8BIT(BC.high);
                 case 0x5: return DEC_8BIT(BC.high);
-                case 0x6: return LD_8BIT_H(BC.high);
+                case 0x6: return LD_8BIT(BC.high);
                 case 0x7: return RLCA();
                 case 0x8: return LD_16BIT_SP();
                 case 0x9: return ADD_HL_R16(BC.word);
@@ -99,7 +99,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0xB: return DEC_16BIT(BC.word);
                 case 0xC: return INC_8BIT(BC.low);
                 case 0xD: return DEC_8BIT(BC.low);
-                case 0xE: return LD_8BIT_L(BC.low);
+                case 0xE: return LD_8BIT(BC.low);
                 case 0xF: return RRCA();
             }
         break;
@@ -111,7 +111,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0x3: return INC_16BIT(DE.word);
                 case 0x4: return INC_8BIT(DE.high);
                 case 0x5: return DEC_8BIT(DE.high);
-                case 0x6: return LD_8BIT_H(DE.high);
+                case 0x6: return LD_8BIT(DE.high);
                 case 0x7: return RLA();
                 case 0x8: return JR();
                 case 0x9: return ADD_HL_R16(DE.word);
@@ -119,7 +119,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0xB: return DEC_16BIT(DE.word);
                 case 0xC: return INC_8BIT(DE.low);
                 case 0xD: return DEC_8BIT(DE.low);
-                case 0xE: return LD_8BIT_L(DE.low);
+                case 0xE: return LD_8BIT(DE.low);
                 case 0xF: return RRA();
             }
         break;
@@ -127,6 +127,10 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
             switch(nibble2) {
                 case 0x0: return JRNZ();
                 case 0x1: return LD_16BIT(HL.word);
+                case 0x2: return LD_HL_INC();
+                case 0x3: return INC_16BIT(HL.word);
+                case 0x4: return INC_8BIT(HL.high);
+                case 0x5: return DEC_8BIT(HL.high);
             }
         break;
         default: cout << "Instruction not recognized." << endl;
@@ -193,18 +197,9 @@ int Processor::LD_16BIT_A(uint16_t &reg) {
 }
 
 // 8-bit Loads
-// High
-int Processor::LD_8BIT_H(uint8_t &regHigh) {
+int Processor::LD_8BIT(uint8_t &reg) {
     
-    regHigh = fetch();
-
-    return 2;
-}
-
-// Low
-int Processor::LD_8BIT_L(uint8_t &regLow) {
-
-    regLow = fetch();
+    reg = fetch();
 
     return 2;
 }

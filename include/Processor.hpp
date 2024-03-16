@@ -69,6 +69,7 @@ class Processor {
         int LD_16BIT(uint16_t &reg);
         int LD_16BIT_A(uint16_t &reg);
         // 8-bit Loads
+        int LD_8BIT(uint8_t &reg);
         int LD_8BIT_H(uint8_t &reg);
         int LD_8BIT_L(uint8_t &reg);
         int LD_A_16BIT(uint16_t &reg);
