@@ -1,5 +1,4 @@
-#ifndef CARTRIDGE_HPP
-#define CARTRIDGE_HPP
+#pragma once
 
 #include <cstdint>
 #include <vector>
@@ -16,5 +15,3 @@ class Cartridge {
         
         Cartridge(string path);
 };
-
-#endif

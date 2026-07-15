@@ -1,5 +1,4 @@
-#ifndef PLATFORM_HPP
-#define PLATFORM_HPP
+#pragma once
 
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_render.h>
@@ -23,5 +22,3 @@ public:
     bool processEvents();
     
 };
-
-#endif

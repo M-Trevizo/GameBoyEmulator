@@ -1,8 +1,8 @@
-#ifndef PROCESSOR_HPP
-#define PROCESSOR_HPP
+#pragma once
+
+#include "./Cartridge.hpp"
 
 #include <cstdint>
-#include "./Cartridge.hpp"
 
 const uint16_t MEM_SIZE = 65535;
 const uint16_t VRAM_START = 0x8000;
@@ -63,6 +63,7 @@ class Processor {
         // Control/Branch instructions
         int JR();
         int JRNZ();
+        int JRZ();
         
         // Load instructions
         // 16-bit Loads
@@ -70,8 +71,6 @@ class Processor {
         int LD_16BIT_A(uint16_t &reg);
         // 8-bit Loads
         int LD_8BIT(uint8_t &reg);
-        int LD_8BIT_H(uint8_t &reg);
-        int LD_8BIT_L(uint8_t &reg);
         int LD_A_16BIT(uint16_t &reg);
         // Load A into HL then increment/decrement HL
         int LD_HL_INC();
@@ -81,6 +80,11 @@ class Processor {
         // Arithmetic instructions
         // Add instructions
         int ADD_HL_R16(uint16_t &reg);
+
+        // Decimal Adjust Accumulator
+        int DAA();
+        // Complement Accumulator
+        int CPL();
 
         // Inc/Dec instructions
         // 16-bit Increment
@@ -102,5 +106,3 @@ class Processor {
 
         int LD_16BIT_SP();
 };
-
-#endif
