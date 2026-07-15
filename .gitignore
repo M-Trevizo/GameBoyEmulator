@@ -1,6 +1,14 @@
 # VSCode
 .vscode
 
+# CLion User-specific stuff
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+
 # Prerequisites
 *.d
 
@@ -46,7 +54,7 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+cmake-build-*/
 
 # SDL
-/include/SDL2/
-/include/lib/
+/vendored
