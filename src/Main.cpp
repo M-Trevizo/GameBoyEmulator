@@ -1,8 +1,9 @@
-#include <iostream>
-#include <array>
 #include "../include/Platform.hpp"
 #include "../include/Cartridge.hpp"
 #include "../include/Processor.hpp"
+
+#include <iostream>
+#include <array>
 
 using namespace std;
 

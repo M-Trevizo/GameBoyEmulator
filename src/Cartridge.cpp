@@ -1,13 +1,14 @@
+#include "../include/Cartridge.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "../include/Cartridge.hpp"
+
 
 Cartridge::Cartridge(string path) {
 
     ifstream stream;
     stream.open(path, ios::binary);
-
     if(!stream.is_open()) {
 
         cout << "Unable to open file." << endl;
