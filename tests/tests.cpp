@@ -1,8 +1,8 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "../doctest/doctest.h"
+#include "doctest.h"
 #include "../include/Processor.hpp"
 
-string path = "E:/GB-Roms/Tetris.gb";
+string path = "F:/GB-Roms/Tetris.gb";
 Cartridge cartridge(path);
 Processor processor(cartridge);
 
@@ -400,13 +400,13 @@ TEST_CASE("Testing Control/Branch Instructions") {
 
         SUBCASE("Testing JRNZ instruction") {
             // Test branch condition
-            processor.AF.low |= Z_FLAG;
+            processor.AF.low = 0;
             processor.PC = 0x04AA; // 0x48, 72
             CHECK(processor.JRNZ() == 3);
             CHECK(processor.PC == 0x04F1);
 
             // Test no branch condition
-            processor.AF.low = 0;
+            processor.AF.low |= Z_FLAG;
             processor.PC = 0x04AA;
             CHECK(processor.JRNZ() == 2);
             CHECK(processor.PC == 0x04AB);
