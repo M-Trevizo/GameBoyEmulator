@@ -1,9 +1,9 @@
-#include <iostream>
-#include <chrono>
-#include <cstdint>
-#include <array>
 #include "../include/Processor.hpp"
 #include "../include/Cartridge.hpp"
+
+#include <iostream>
+#include <chrono>
+#include <array>
 
 using namespace std;
 
@@ -51,7 +51,7 @@ array<uint8_t, 2> Processor::get8BitRegisters(uint16_t r) {
     uint8_t highRegister = (r & highMask) >> 8;
     uint8_t lowRegister = r & lowMask;
 
-    array<uint8_t, 2> registers = {highRegister, lowRegister};
+    array registers = {highRegister, lowRegister};
 
     return registers;
 }
@@ -131,8 +131,22 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0x3: return INC_16BIT(HL.word);
                 case 0x4: return INC_8BIT(HL.high);
                 case 0x5: return DEC_8BIT(HL.high);
+                case 0x6: return LD_8BIT(HL.high);
+                case 0x7: return DAA();
+                case 0x8: return JRZ();
+                case 0x9: return ADD_HL_R16(HL.word);
+                case 0xA: return LD_A_INC();
+                case 0xB: return DEC_16BIT(HL.word);
+                case 0xC: return INC_8BIT(HL.low);
+                case 0xD: return DEC_8BIT(HL.low);
+                case 0xE: return LD_8BIT(HL.low);
+                case 0xF: return CPL();
             }
         break;
+        case 0x3:
+            switch(nibble2) {
+                case 0x0: ;
+            }
         default: cout << "Instruction not recognized." << endl;
     }
 
@@ -165,7 +179,22 @@ int Processor::JR() {
 // Jump Relative if Zero flag is not set
 int Processor::JRNZ() {
     
-    // Jump if Z flag set
+    // Jump if Z flag is NOT set
+    if((AF.low & Z_FLAG) != Z_FLAG) {
+        int8_t byte = memory[PC];
+        PC += byte - 1;
+        return 3;
+    }
+
+    // Increment PC if no jump
+    PC++;
+
+    return 2;
+}
+
+int Processor::JRZ() {
+
+    // Jump if Z flag is set
     if((AF.low & Z_FLAG) == Z_FLAG) {
         int8_t byte = memory[PC];
         PC += byte - 1;
@@ -385,6 +414,58 @@ int Processor::RRA() {
     else {
         AF.low &= ~C_FLAG;
     }
+
+    return 1;
+}
+
+// Decimal Adjust Accumulator
+int Processor::DAA() {
+    
+    uint8_t lowNibble = AF.high & 0xF;
+    uint8_t highNibble = (AF.high >> 4) & 0xF;
+
+    if(highNibble > 0x9 && lowNibble > 0x9) {
+        AF.high += 0x66;
+    }
+    else if(highNibble > 0x9) {
+        AF.high += 0x60;
+    }
+    else if(lowNibble > 0x9) {
+        AF.high += 0x06;
+    }
+
+    // Set or Unset Z-flag
+    if(AF.high == 0) {
+        AF.low |= Z_FLAG;
+    }
+    else {
+        AF.low &= ~Z_FLAG;
+    }
+
+    // Unset H-flag
+    AF.low &= ~H_FLAG;
+
+    // Set or Unset C_flag
+    if(highNibble > 0x9) {
+        AF.low |= C_FLAG;
+    }
+    else {
+        AF.low &= ~C_FLAG;
+    }
+
+    return 1;
+}
+
+// Complement accumulator
+int Processor::CPL() {
+    
+    ~AF.high;
+
+    // Set N-flag
+    AF.low |= N_FLAG;
+
+    // Set H-flag
+    AF.low |= H_FLAG; 
 
     return 1;
 }
