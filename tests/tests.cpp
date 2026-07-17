@@ -131,6 +131,14 @@ TEST_CASE("Testing Arithmetic Instructions") {
         CHECK(processor.BC.low == 0x11);
         CHECK(processor.BC.high == 0x11);
 
+        // Testing inc and dec of memory location
+        processor.HL.word = 0x1024;
+        uint8_t value = processor.memory[processor.HL.word];
+        CHECK(processor.INC_8BIT(processor.memory[processor.HL.word], true) == 3);
+        CHECK(processor.memory[processor.HL.word] == value + 1);
+        CHECK(processor.DEC_8BIT(processor.memory[processor.HL.word], true) == 3);
+        CHECK(processor.memory[processor.HL.word] == value);
+
         // Testing Decrement
         processor.BC.word = 0x1010;
         CHECK(processor.DEC_8BIT(processor.BC.low) == 1);
