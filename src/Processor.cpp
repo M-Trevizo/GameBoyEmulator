@@ -145,7 +145,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
         break;
         case 0x3:
             switch(nibble2) {
-                case 0x0: ;
+                case 0x0: return JRNC();
             }
         default: cout << "Instruction not recognized." << endl;
     }
@@ -204,6 +204,20 @@ int Processor::JRZ() {
     // Increment PC if no jump
     PC++;
 
+    return 2;
+}
+
+int Processor::JRNC() {
+
+    // Jump if C flag is NOT set
+    if ((AF.low & C_FLAG) != C_FLAG) {
+        const int8_t byte = memory[PC];
+        PC += byte - 1;
+        return 3;
+    }
+
+    // Increment PC if no jump
+    PC++;
     return 2;
 }
 

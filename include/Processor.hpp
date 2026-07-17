@@ -25,84 +25,84 @@ union Register {
 };
 
 class Processor {
+public:
 
-    public:
+    uint8_t memory[MEM_SIZE];
 
-        uint8_t memory[MEM_SIZE];
+    // General Registers
+    Register AF;
+    Register BC;
+    Register DE;
+    Register HL;
 
-        // General Registers
-        Register AF;
-        Register BC;
-        Register DE;
-        Register HL;
+    // Hardware Registers
+    uint8_t LCDC = 0;                                      // LCD Control
 
-        // Hardware Registers
-        uint8_t LCDC = 0;                                      // LCD Control
+    // Program Counter
+    int PC;
 
-        // Program Counter
-        int PC;
+    // Stack Pointer
+    // Not a register, using reg union to get high and low bytes
+    Register SP;
 
-        // Stack Pointer
-        // Not a register, using reg union to get high and low bytes
-        Register SP;
+    bool isRunning = false;
 
-        bool isRunning = false;
+    Processor(Cartridge cartridge, uint8_t cartType = 0);
+    void tickClock();
+    void bootSequence(Cartridge cart);
+    array<uint8_t, 2> get8BitRegisters(uint16_t r);
+    uint16_t fetch();
+    array<uint8_t, 2> decode(uint8_t opCode);
+    int execute(array<uint8_t, 2> nibbles);
 
-        Processor(Cartridge cartridge, uint8_t cartType = 0);
-        void tickClock();
-        void bootSequence(Cartridge cart);
-        array<uint8_t, 2> get8BitRegisters(uint16_t r);
-        uint16_t fetch();
-        array<uint8_t, 2> decode(uint8_t opCode);
-        int execute(array<uint8_t, 2> nibbles);
-        
-        // 0x00
-        int NOP();
-        // 0x10
-        int STOP();
-        // Control/Branch instructions
-        int JR();
-        int JRNZ();
-        int JRZ();
-        
-        // Load instructions
-        // 16-bit Loads
-        int LD_16BIT(uint16_t &reg);
-        int LD_16BIT_A(uint16_t &reg);
-        // 8-bit Loads
-        int LD_8BIT(uint8_t &reg);
-        int LD_A_16BIT(uint16_t &reg);
-        // Load A into HL then increment/decrement HL
-        int LD_HL_INC();
-        // Load HL into A then increment/decrement HL
-        int LD_A_INC();
-        
-        // Arithmetic instructions
-        // Add instructions
-        int ADD_HL_R16(uint16_t &reg);
+    // 0x00
+    int NOP();
+    // 0x10
+    int STOP();
+    // Control/Branch instructions
+    int JR();
+    int JRNZ();
+    int JRZ();
+    int JRNC();
 
-        // Decimal Adjust Accumulator
-        int DAA();
-        // Complement Accumulator
-        int CPL();
+    // Load instructions
+    // 16-bit Loads
+    int LD_16BIT(uint16_t &reg);
+    int LD_16BIT_A(uint16_t &reg);
+    // 8-bit Loads
+    int LD_8BIT(uint8_t &reg);
+    int LD_A_16BIT(uint16_t &reg);
+    // Load A into HL then increment/decrement HL
+    int LD_HL_INC();
+    // Load HL into A then increment/decrement HL
+    int LD_A_INC();
 
-        // Inc/Dec instructions
-        // 16-bit Increment
-        int INC_16BIT(uint16_t &reg);
-        // 16-bit Decrement
-        int DEC_16BIT(uint16_t &reg);
-        // 8-bit Increment
-        int INC_8BIT(uint8_t &reg);
-        // 8-bit Decrement
-        int DEC_8BIT(uint8_t &reg);
-        
-        // Bit operations
-        int RLCA();
-        int RRCA();
-        int RLA();
-        int RRA();
+    // Arithmetic instructions
+    // Add instructions
+    int ADD_HL_R16(uint16_t &reg);
 
-        // Stack(SP) Operations
+    // Decimal Adjust Accumulator
+    int DAA();
+    // Complement Accumulator
+    int CPL();
 
-        int LD_16BIT_SP();
+    // Inc/Dec instructions
+    // 16-bit Increment
+    int INC_16BIT(uint16_t &reg);
+    // 16-bit Decrement
+    int DEC_16BIT(uint16_t &reg);
+    // 8-bit Increment
+    int INC_8BIT(uint8_t &reg);
+    // 8-bit Decrement
+    int DEC_8BIT(uint8_t &reg);
+
+    // Bit operations
+    int RLCA();
+    int RRCA();
+    int RLA();
+    int RRA();
+
+    // Stack(SP) Operations
+
+    int LD_16BIT_SP();
 };
