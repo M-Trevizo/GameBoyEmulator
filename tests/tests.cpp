@@ -7,7 +7,6 @@ Cartridge cartridge(path);
 Processor processor(cartridge);
 
 TEST_CASE("Testing Cartridge") {
-    std::cout << (int)cartridge.cartROM[0] << std::endl;
     CHECK(cartridge.cartROM[0x0101] == 0xC3);
 }
 
@@ -81,6 +80,22 @@ TEST_CASE("Testing Load Instructions") {
         SUBCASE("Testing 0x02 load A into memory address BC") {
             CHECK(processor.LD_16BIT_A(processor.BC.word) == 2);
             CHECK(processor.memory[processor.BC.word] == processor.AF.high);
+        }
+
+        SUBCASE("Testing 0x22 load A into HL and increment HL") {
+            processor.HL.word = 0x0001;
+            processor.AF.high = 0x01;
+            CHECK(processor.LD_HL_INC() == 2);
+            CHECK(processor.memory[processor.HL.word - 1] == processor.AF.high);
+            CHECK(processor.HL.word == 0x02);
+        }
+
+        SUBCASE("Testing 0x32 load A into HL and decrement HL") {
+            processor.HL.word = 0x02;
+            processor.AF.high = 0x01;
+            CHECK(processor.LD_HL_DEC() == 2);
+            CHECK(processor.memory[processor.HL.word + 1] == processor.AF.high);
+            CHECK(processor.HL.word == 0x01);
         }
 
         SUBCASE("Testing 0x0A load memory address BC into A") {
