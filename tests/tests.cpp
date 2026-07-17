@@ -67,7 +67,7 @@ TEST_CASE("Testing Load Instructions") {
 TEST_CASE("Testing Arithmetic Instructions") {
     processor.BC.word = 0x11AA;
 
-    SUBCASE("Testing 16-bit Incrememnt and Decrement") {
+    SUBCASE("Testing 16-bit Increment and Decrement") {
         CHECK(processor.INC_16BIT(processor.BC.word) == 2);
         CHECK(processor.BC.word == 0x11AA + 1);
         CHECK(processor.DEC_16BIT(processor.BC.word) == 2);
@@ -409,6 +409,20 @@ TEST_CASE("Testing Control/Branch Instructions") {
             processor.AF.low |= Z_FLAG;
             processor.PC = 0x04AA;
             CHECK(processor.JRNZ() == 2);
+            CHECK(processor.PC == 0x04AB);
+        }
+
+        SUBCASE("Testing JRNC instruction") {
+            // Test branch condition
+            processor.AF.low = 0;
+            processor.PC = 0x04AA; // 0x48, 72
+            CHECK(processor.JRNC() == 3);
+            CHECK(processor.PC == 0x04F1);
+
+            // Test no branch condition
+            processor.AF.low |= C_FLAG;
+            processor.PC = 0x04AA;
+            CHECK(processor.JRNC() == 2);
             CHECK(processor.PC == 0x04AB);
         }
 
