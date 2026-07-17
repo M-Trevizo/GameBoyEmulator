@@ -108,6 +108,15 @@ TEST_CASE("Testing Load Instructions") {
             CHECK(processor.LD_A_16BIT(processor.DE.word) == 2);
             CHECK(processor.memory[processor.DE.word] == 0xE0);
         }
+
+        SUBCASE("Testing load 8-bit immediate value into memory[HL]") {
+            processor.HL.word = 0x1000;
+            processor.memory[processor.HL.word] = 0x10;
+            uint8_t value = processor.memory[processor.PC];
+            CHECK(processor.LD_8BIT(processor.memory[processor.HL.word], true) == 3);
+            CHECK(processor.memory[processor.HL.word] == value);
+        }
+
     }
 
 }
