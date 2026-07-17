@@ -50,6 +50,13 @@ TEST_CASE("Testing Load Instructions") {
             CHECK(processor.HL.low == 0xED);
         }
 
+        SUBCASE("Testing 0x31 load immediate into SP") {
+            CHECK(processor.LD_16BIT(processor.SP.word) == 3);
+            CHECK(processor.SP.word == 0xCEED);
+            CHECK(processor.SP.high == 0xCE);
+            CHECK(processor.SP.low == 0xED);
+        }
+
 
         CHECK(processor.LD_16BIT_A(processor.BC.word) == 2);
         CHECK(processor.memory[processor.BC.word] == 0x12);
