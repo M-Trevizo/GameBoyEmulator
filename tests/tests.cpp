@@ -23,7 +23,6 @@ TEST_CASE("Testing Fetch and that PC increments after each Fetch call") {
 }
 
 TEST_CASE("Testing Load Instructions") {
-
     SUBCASE("Testing 16-Bit Loads") {
         processor.PC = 0x0104;
         processor.AF.high = 0x12;
@@ -57,10 +56,6 @@ TEST_CASE("Testing Load Instructions") {
             CHECK(processor.SP.low == 0xED);
         }
 
-
-        CHECK(processor.LD_16BIT_A(processor.BC.word) == 2);
-        CHECK(processor.memory[processor.BC.word] == 0x12);
-
         processor.PC = 0x0104;
         processor.SP.word = 0x1234;
         CHECK(processor.LD_16BIT_SP() == 5);
@@ -70,20 +65,34 @@ TEST_CASE("Testing Load Instructions") {
 
     SUBCASE("Testing 8-Bit Loads") {
         processor.PC = 0x0104;
-        CHECK(processor.LD_8BIT(processor.BC.high) == 2);
-        CHECK(processor.BC.high == 0xCE);
+        REQUIRE(processor.PC == 0x0104);
 
-        processor.PC = 0x0104;
-        processor.LD_8BIT(processor.BC.low);
-        CHECK(processor.BC.low == 0xCE);
 
-        processor.BC.word = 0x0012;
-        CHECK(processor.LD_A_16BIT(processor.BC.word) == 2);
-        CHECK(processor.memory[processor.BC.word] == 0xFF);
-        
-        processor.DE.word = 0x0064;
-        processor.LD_A_16BIT(processor.DE.word);
-        CHECK(processor.memory[processor.DE.word] == 0xE0);
+        SUBCASE("Testing 0x06 load immediate into B") {
+            CHECK(processor.LD_8BIT(processor.BC.high) == 2);
+            CHECK(processor.BC.high == 0xCE);
+        }
+
+        SUBCASE("Testing 0x0E load immediate into C") {
+            CHECK(processor.LD_8BIT(processor.BC.low) == 2);
+            CHECK(processor.BC.low == 0xCE);
+        }
+
+        SUBCASE("Testing 0x02 load A into memory address BC") {
+            CHECK(processor.LD_16BIT_A(processor.BC.word) == 2);
+            CHECK(processor.memory[processor.BC.word] == processor.AF.high);
+        }
+
+        SUBCASE("Testing 0x0A load memory address BC into A") {
+            CHECK(processor.LD_A_16BIT(processor.BC.word) == 2);
+            CHECK(processor.AF.high == processor.memory[processor.BC.word]);
+        }
+
+        SUBCASE("Testing 0x1A load memory address DE into A") {
+            processor.DE.word = 0x0064;
+            CHECK(processor.LD_A_16BIT(processor.DE.word) == 2);
+            CHECK(processor.memory[processor.DE.word] == 0xE0);
+        }
     }
 
 }
