@@ -74,6 +74,7 @@ public:
     int LD_A_16BIT(uint16_t &reg);
     // Load A into HL then increment/decrement HL
     int LD_HL_INC();
+    int LD_HL_DEC();
     // Load HL into A then increment/decrement HL
     int LD_A_INC();
 
@@ -92,9 +93,9 @@ public:
     // 16-bit Decrement
     int DEC_16BIT(uint16_t &reg);
     // 8-bit Increment
-    int INC_8BIT(uint8_t &reg);
+    int INC_8BIT(uint8_t &reg, bool is_pointer = false);
     // 8-bit Decrement
-    int DEC_8BIT(uint8_t &reg);
+    int DEC_8BIT(uint8_t &reg, bool is_pointer = false);
 
     // Bit operations
     int RLCA();

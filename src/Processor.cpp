@@ -146,6 +146,11 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
         case 0x3:
             switch(nibble2) {
                 case 0x0: return JRNC();
+                case 0x1: return LD_16BIT(SP.word);
+                case 0x2: return LD_HL_DEC();
+                case 0x3: return INC_16BIT(SP.word);
+                case 0x4: return INC_8BIT(memory[HL.word], true);
+                case 0x5: return DEC_8BIT(memory[HL.word], true);
             }
         default: cout << "Instruction not recognized." << endl;
     }
@@ -262,6 +267,14 @@ int Processor::LD_HL_INC() {
     return 2;
 }
 
+int Processor::LD_HL_DEC() {
+
+    memory[HL.word] = AF.high;
+    HL.word--;
+
+    return 2;
+}
+
 int Processor::LD_A_INC() {
 
     AF.high = memory[HL.word];
@@ -287,7 +300,7 @@ int Processor::DEC_16BIT(uint16_t &reg) {
 }
 
 // Increment 8-bit register
-int Processor::INC_8BIT(uint8_t &reg) {
+int Processor::INC_8BIT(uint8_t &reg, bool is_pointer) {
     reg++;
 
     uint8_t lowNibble = reg & 0x0F;
@@ -299,11 +312,15 @@ int Processor::INC_8BIT(uint8_t &reg) {
     }
     AF.low &= ~N_FLAG;
 
+    if (is_pointer) {
+        return 3;
+    }
+
     return 1;
 }
 
 // Decrement 8-bit register
-int Processor::DEC_8BIT(uint8_t &reg) {
+int Processor::DEC_8BIT(uint8_t &reg, bool is_pointer) {
 
     reg--;
 
@@ -315,7 +332,11 @@ int Processor::DEC_8BIT(uint8_t &reg) {
         AF.low |= H_FLAG;
     }
     AF.low |= N_FLAG;
-    
+
+    if (is_pointer) {
+        return 3;
+    }
+
     return 1;
 }
 
