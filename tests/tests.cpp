@@ -29,10 +29,27 @@ TEST_CASE("Testing Load Instructions") {
         processor.AF.high = 0x12;
         REQUIRE(processor.PC == 0x0104);
 
-        CHECK(processor.LD_16BIT(processor.BC.word) == 3);
-        CHECK(processor.BC.word == 0xCEED);
-        CHECK(processor.BC.high == 0xCE);
-        CHECK(processor.BC.low == 0xED);
+        SUBCASE("Testing 0x01 load immediate into BC") {
+            CHECK(processor.LD_16BIT(processor.BC.word) == 3);
+            CHECK(processor.BC.word == 0xCEED);
+            CHECK(processor.BC.high == 0xCE);
+            CHECK(processor.BC.low == 0xED);
+        }
+
+        SUBCASE("Testing 0x11 load immediate into DE") {
+            CHECK(processor.LD_16BIT(processor.DE.word) == 3);
+            CHECK(processor.DE.word == 0xCEED);
+            CHECK(processor.DE.high == 0xCE);
+            CHECK(processor.DE.low == 0xED);
+        }
+
+        SUBCASE("Testing 0x21 load immediate into HL") {
+            CHECK(processor.LD_16BIT(processor.HL.word) == 3);
+            CHECK(processor.HL.word == 0xCEED);
+            CHECK(processor.HL.high == 0xCE);
+            CHECK(processor.HL.low == 0xED);
+        }
+
 
         CHECK(processor.LD_16BIT_A(processor.BC.word) == 2);
         CHECK(processor.memory[processor.BC.word] == 0x12);
