@@ -64,6 +64,7 @@ public:
     int JRNZ();
     int JRZ();
     int JRNC();
+    int JRC();
 
     // Load instructions
     // 16-bit Loads

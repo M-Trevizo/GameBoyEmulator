@@ -153,6 +153,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0x5: return DEC_8BIT(memory[HL.word], true);
                 case 0x6: return LD_8BIT(memory[HL.word], true);
                 case 0x7: return SCF();
+                case 0x8: return JRC();
             }
         default: cout << "Instruction not recognized." << endl;
     }
@@ -224,6 +225,19 @@ int Processor::JRNC() {
     }
 
     // Increment PC if no jump
+    PC++;
+    return 2;
+}
+
+int Processor::JRC() {
+
+    // Jump if C flag is set
+    if ((AF.low & C_FLAG) == C_FLAG) {
+        const auto byte = static_cast<int8_t>(memory[PC]);
+        PC += byte - 1;
+        return 3;
+    }
+
     PC++;
     return 2;
 }
