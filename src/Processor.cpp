@@ -151,6 +151,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0x3: return INC_16BIT(SP.word);
                 case 0x4: return INC_8BIT(memory[HL.word], true);
                 case 0x5: return DEC_8BIT(memory[HL.word], true);
+                case 0x6: return LD_8BIT(memory[HL.word], true);
             }
         default: cout << "Instruction not recognized." << endl;
     }
@@ -245,9 +246,13 @@ int Processor::LD_16BIT_A(uint16_t &reg) {
 }
 
 // 8-bit Loads
-int Processor::LD_8BIT(uint8_t &reg) {
-    
+int Processor::LD_8BIT(uint8_t &reg, bool is_pointer) {
+
     reg = fetch();
+
+    if (is_pointer) {
+        return 3;
+    }
 
     return 2;
 }

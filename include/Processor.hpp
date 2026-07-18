@@ -70,7 +70,7 @@ public:
     int LD_16BIT(uint16_t &reg);
     int LD_16BIT_A(uint16_t &reg);
     // 8-bit Loads
-    int LD_8BIT(uint8_t &reg);
+    int LD_8BIT(uint8_t &reg, bool is_pointer = false);
     int LD_A_16BIT(uint16_t &reg);
     // Load A into HL then increment/decrement HL
     int LD_HL_INC();
