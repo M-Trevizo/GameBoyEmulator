@@ -507,5 +507,19 @@ TEST_CASE("Testing Control/Branch Instructions") {
             CHECK_EQ(processor.PC, 0x04AB);
         }
 
+        SUBCASE("Testing JRC instruction") {
+            // Test branch condition
+            processor.AF.low |= C_FLAG;
+            processor.PC = 0x04AA; // 0x48, 72
+            CHECK_EQ(processor.JRC(), 3);
+            CHECK_EQ(processor.PC, 0x04F1);
+
+            // Test no branch condition
+            processor.AF.low = 0;
+            processor.PC = 0x04AA;
+            CHECK_EQ(processor.JRC(), 2);
+            CHECK_EQ(processor.PC, 0x04AB);
+        }
+
     }
 }
