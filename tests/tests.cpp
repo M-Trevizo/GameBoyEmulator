@@ -274,6 +274,22 @@ TEST_CASE("Testing Arithmetic Instructions") {
             }
         }
     }
+
+    SUBCASE("Testing flag set instructions") {
+        processor.AF.low = 0x0;
+        REQUIRE_EQ(processor.AF.low, 0x0);
+
+        SUBCASE("Testing SCF w/ no flags set") {
+            CHECK_EQ(processor.SCF(), 1);
+            CHECK_EQ(processor.AF.low, C_FLAG);
+        }
+
+        SUBCASE("Testing SCF w/ all flags set") {
+            processor.AF.low = Z_FLAG | H_FLAG | N_FLAG | C_FLAG;
+            CHECK_EQ(processor.SCF(), 1);
+            CHECK_EQ(processor.AF.low, Z_FLAG | C_FLAG);
+        }
+    }
 }
 
 TEST_CASE("Testing Rotate/Shift Bit Instructions") {
