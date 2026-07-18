@@ -152,6 +152,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0x4: return INC_8BIT(memory[HL.word], true);
                 case 0x5: return DEC_8BIT(memory[HL.word], true);
                 case 0x6: return LD_8BIT(memory[HL.word], true);
+                case 0x7: return SCF();
             }
         default: cout << "Instruction not recognized." << endl;
     }
@@ -506,6 +507,16 @@ int Processor::CPL() {
 
     // Set H-flag
     AF.low |= H_FLAG; 
+
+    return 1;
+}
+
+// Set carry flag
+int Processor::SCF() {
+
+    AF.low |= C_FLAG;
+    AF.low &= ~N_FLAG;
+    AF.low &= ~H_FLAG;
 
     return 1;
 }

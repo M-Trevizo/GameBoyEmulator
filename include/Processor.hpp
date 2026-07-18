@@ -86,6 +86,8 @@ public:
     int DAA();
     // Complement Accumulator
     int CPL();
+    // Set Carry Flag
+    int SCF();
 
     // Inc/Dec instructions
     // 16-bit Increment
