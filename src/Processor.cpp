@@ -87,19 +87,19 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
             switch(nibble2) {
                 case 0x0: return NOP();
                 case 0x1: return LD_16BIT(BC.word);
-                case 0x2: return LD_16BIT_A(BC.word);
+                case 0x2: return LD_8BIT(memory[BC.word], AF.high, true);
                 case 0x3: return INC_16BIT(BC.word);
                 case 0x4: return INC_8BIT(BC.high);
                 case 0x5: return DEC_8BIT(BC.high);
-                case 0x6: return LD_8BIT(BC.high);
+                case 0x6: return LD_8BIT_IMM(BC.high);
                 case 0x7: return RLCA();
                 case 0x8: return LD_16BIT_SP();
                 case 0x9: return ADD_HL_R16(BC.word);
-                case 0xA: return LD_A_16BIT(BC.word);
+                case 0xA: return LD_8BIT(AF.high, memory[BC.word], true);
                 case 0xB: return DEC_16BIT(BC.word);
                 case 0xC: return INC_8BIT(BC.low);
                 case 0xD: return DEC_8BIT(BC.low);
-                case 0xE: return LD_8BIT(BC.low);
+                case 0xE: return LD_8BIT_IMM(BC.low);
                 case 0xF: return RRCA();
             }
         break;
@@ -107,19 +107,19 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
             switch(nibble2) {
                 case 0x0: return STOP();
                 case 0x1: return LD_16BIT(DE.word);
-                case 0x2: return LD_16BIT_A(DE.word);
+                case 0x2: return LD_8BIT(memory[DE.word], AF.high, true);
                 case 0x3: return INC_16BIT(DE.word);
                 case 0x4: return INC_8BIT(DE.high);
                 case 0x5: return DEC_8BIT(DE.high);
-                case 0x6: return LD_8BIT(DE.high);
+                case 0x6: return LD_8BIT_IMM(DE.high);
                 case 0x7: return RLA();
                 case 0x8: return JR();
                 case 0x9: return ADD_HL_R16(DE.word);
-                case 0xA: return LD_A_16BIT(DE.word);
+                case 0xA: return LD_8BIT(AF.high, memory[DE.word], true);
                 case 0xB: return DEC_16BIT(DE.word);
                 case 0xC: return INC_8BIT(DE.low);
                 case 0xD: return DEC_8BIT(DE.low);
-                case 0xE: return LD_8BIT(DE.low);
+                case 0xE: return LD_8BIT_IMM(DE.low);
                 case 0xF: return RRA();
             }
         break;
@@ -127,19 +127,19 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
             switch(nibble2) {
                 case 0x0: return JRNZ();
                 case 0x1: return LD_16BIT(HL.word);
-                case 0x2: return LD_HL_INC();
+                case 0x2: return LD_8BIT(memory[HL.word], AF.high, true, INC);
                 case 0x3: return INC_16BIT(HL.word);
                 case 0x4: return INC_8BIT(HL.high);
                 case 0x5: return DEC_8BIT(HL.high);
-                case 0x6: return LD_8BIT(HL.high);
+                case 0x6: return LD_8BIT_IMM(HL.high);
                 case 0x7: return DAA();
                 case 0x8: return JRZ();
                 case 0x9: return ADD_HL_R16(HL.word);
-                case 0xA: return LD_A_INC();
+                case 0xA: return LD_8BIT(AF.high, memory[HL.word], true, INC);
                 case 0xB: return DEC_16BIT(HL.word);
                 case 0xC: return INC_8BIT(HL.low);
                 case 0xD: return DEC_8BIT(HL.low);
-                case 0xE: return LD_8BIT(HL.low);
+                case 0xE: return LD_8BIT_IMM(HL.low);
                 case 0xF: return CPL();
             }
         break;
@@ -147,13 +147,19 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
             switch(nibble2) {
                 case 0x0: return JRNC();
                 case 0x1: return LD_16BIT(SP.word);
-                case 0x2: return LD_HL_DEC();
+                case 0x2: return LD_8BIT(memory[HL.word], AF.high, true, DEC);
                 case 0x3: return INC_16BIT(SP.word);
                 case 0x4: return INC_8BIT(memory[HL.word], true);
                 case 0x5: return DEC_8BIT(memory[HL.word], true);
-                case 0x6: return LD_8BIT(memory[HL.word], true);
+                case 0x6: return LD_8BIT_IMM(memory[HL.word], true);
                 case 0x7: return SCF();
                 case 0x8: return JRC();
+                case 0x9: return ADD_HL_R16(SP.word);
+                case 0xA: return LD_8BIT(AF.high, memory[HL.word], true, DEC);
+                case 0xB: return DEC_16BIT(SP.word);
+                case 0xC: return INC_8BIT(AF.high);
+                case 0xD: return DEC_8BIT(AF.high);
+                case 0xE: return LD_8BIT_IMM(AF.high);
             }
         default: cout << "Instruction not recognized." << endl;
     }
@@ -252,54 +258,25 @@ int Processor::LD_16BIT(uint16_t &reg) {
     return 3;
 }
 
-int Processor::LD_16BIT_A(uint16_t &reg) {
-    
-    uint8_t A = AF.high;
-    memory[reg] = A;
-
-    return 2;
+// 8-bit Loads
+int Processor::LD_8BIT(uint8_t &to, const uint8_t &from, const bool isMemory, const ModifyHL shouldModify) {
+    to = from;
+    if (isMemory) {
+        switch (shouldModify) {
+            case INC: HL.word++; break;
+            case DEC: HL.word--; break;
+            default: ;
+        }
+        return 2;
+    }
+    return 1;
 }
 
-// 8-bit Loads
-int Processor::LD_8BIT(uint8_t &reg, bool is_pointer) {
-
-    reg = fetch();
-
-    if (is_pointer) {
+int Processor::LD_8BIT_IMM(uint8_t &to, const bool isMemory) {
+    to = fetch();
+    if (isMemory) {
         return 3;
     }
-
-    return 2;
-}
-
-int Processor::LD_A_16BIT(uint16_t &reg) {
-
-    AF.high = memory[reg];
-
-    return 2;
-}
-
-int Processor::LD_HL_INC() {
-
-    memory[HL.word] = AF.high;
-    HL.word++;
-
-    return 2;
-}
-
-int Processor::LD_HL_DEC() {
-
-    memory[HL.word] = AF.high;
-    HL.word--;
-
-    return 2;
-}
-
-int Processor::LD_A_INC() {
-
-    AF.high = memory[HL.word];
-    HL.word++;
-
     return 2;
 }
 

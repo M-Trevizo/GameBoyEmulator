@@ -3,6 +3,7 @@
 #include "./Cartridge.hpp"
 
 #include <cstdint>
+#include <optional>
 
 const uint16_t MEM_SIZE = 65535;
 const uint16_t VRAM_START = 0x8000;
@@ -34,6 +35,11 @@ public:
     Register BC;
     Register DE;
     Register HL;
+    enum ModifyHL {
+        NONE,
+        INC,
+        DEC
+    };
 
     // Hardware Registers
     uint8_t LCDC = 0;                                      // LCD Control
@@ -47,7 +53,10 @@ public:
 
     bool isRunning = false;
 
+
+
     Processor(Cartridge cartridge, uint8_t cartType = 0);
+
     void tickClock();
     void bootSequence(Cartridge cart);
     array<uint8_t, 2> get8BitRegisters(uint16_t r);
@@ -69,15 +78,10 @@ public:
     // Load instructions
     // 16-bit Loads
     int LD_16BIT(uint16_t &reg);
-    int LD_16BIT_A(uint16_t &reg);
+
     // 8-bit Loads
-    int LD_8BIT(uint8_t &reg, bool is_pointer = false);
-    int LD_A_16BIT(uint16_t &reg);
-    // Load A into HL then increment/decrement HL
-    int LD_HL_INC();
-    int LD_HL_DEC();
-    // Load HL into A then increment/decrement HL
-    int LD_A_INC();
+    int LD_8BIT(uint8_t &to, const uint8_t &from, bool isMemory = false, ModifyHL shouldModify = NONE);
+    int LD_8BIT_IMM(uint8_t &to, bool isMemory = false);
 
     // Arithmetic instructions
     // Add instructions
