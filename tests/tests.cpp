@@ -63,58 +63,54 @@ TEST_CASE("Testing Load Instructions") {
     }
 
     SUBCASE("Testing 8-Bit Loads") {
-        processor.PC = 0x0104;
+        processor.PC = 0x0104; // 0xCE
+        processor.BC.word = 0x1234;
+        processor.DE.word = 0x2121;
         REQUIRE_EQ(processor.PC, 0x0104);
+        REQUIRE_EQ(processor.BC.word, 0x1234);
+        REQUIRE_EQ(processor.DE.word, 0x2121);
 
+        SUBCASE("LD_8BIT() returns 1 for load r8 r8") {
+            CHECK_EQ(processor.LD_8BIT(processor.BC.high, processor.DE.high), 1);
+        }
 
-        SUBCASE("Testing 0x06 load immediate into B") {
-            CHECK_EQ(processor.LD_8BIT(processor.BC.high), 2);
+        SUBCASE("LD_8BIT() loads from r8 to r8") {
+            processor.LD_8BIT(processor.BC.high, processor.DE.high);
+            CHECK_EQ(processor.BC.high, processor.DE.high);
+        }
+
+        SUBCASE("LD_8BIT() loads from memory to r8 return 2") {
+            CHECK_EQ(processor.LD_8BIT(processor.memory[processor.BC.word], processor.DE.high, true), 2);
+        }
+
+        SUBCASE("LD_8BIT() loads from memory to r8") {
+            processor.LD_8BIT(processor.memory[processor.BC.word], processor.DE.high, true);
+            CHECK_EQ(processor.memory[processor.BC.word], processor.DE.high);
+        }
+
+        SUBCASE("LD_8BIT() increments HL") {
+            processor.HL.word = 0x1000;
+            processor.LD_8BIT(processor.memory[processor.HL.word], processor.AF.high, true, Processor::INC);
+            CHECK_EQ(processor.HL.word, 0x1001);
+        }
+
+        SUBCASE("LD_8BIT() decrements HL") {
+            processor.HL.word = 0x1001;
+            processor.LD_8BIT(processor.memory[processor.HL.word], processor.AF.high, true, Processor::DEC);
+            CHECK_EQ(processor.HL.word, 0x1000);
+        }
+
+        SUBCASE("LD_8BIT_IMM() returns 2 for load r8 u8") {
+            CHECK_EQ(processor.LD_8BIT_IMM(processor.BC.high), 2);
+        }
+
+        SUBCASE("LD_8BIT_IMM() loads from u8 to r8") {
+            processor.LD_8BIT_IMM(processor.BC.high);
             CHECK_EQ(processor.BC.high, 0xCE);
         }
 
-        SUBCASE("Testing 0x0E load immediate into C") {
-            CHECK_EQ(processor.LD_8BIT(processor.BC.low), 2);
-            CHECK_EQ(processor.BC.low, 0xCE);
-        }
-
-        SUBCASE("Testing 0x02 load A into memory address BC") {
-            CHECK_EQ(processor.LD_16BIT_A(processor.BC.word), 2);
-            CHECK_EQ(processor.memory[processor.BC.word], processor.AF.high);
-        }
-
-        SUBCASE("Testing 0x22 load A into HL and increment HL") {
-            processor.HL.word = 0x0001;
-            processor.AF.high = 0x01;
-            CHECK_EQ(processor.LD_HL_INC(), 2);
-            CHECK_EQ(processor.memory[processor.HL.word - 1], processor.AF.high);
-            CHECK_EQ(processor.HL.word, 0x02);
-        }
-
-        SUBCASE("Testing 0x32 load A into HL and decrement HL") {
-            processor.HL.word = 0x02;
-            processor.AF.high = 0x01;
-            CHECK_EQ(processor.LD_HL_DEC(), 2);
-            CHECK_EQ(processor.memory[processor.HL.word + 1], processor.AF.high);
-            CHECK_EQ(processor.HL.word, 0x01);
-        }
-
-        SUBCASE("Testing 0x0A load memory address BC into A") {
-            CHECK_EQ(processor.LD_A_16BIT(processor.BC.word), 2);
-            CHECK_EQ(processor.AF.high, processor.memory[processor.BC.word]);
-        }
-
-        SUBCASE("Testing 0x1A load memory address DE into A") {
-            processor.DE.word = 0x0064;
-            CHECK_EQ(processor.LD_A_16BIT(processor.DE.word), 2);
-            CHECK_EQ(processor.memory[processor.DE.word], 0xE0);
-        }
-
-        SUBCASE("Testing load 8-bit immediate value into memory[HL]") {
-            processor.HL.word = 0x1000;
-            processor.memory[processor.HL.word] = 0x10;
-            uint8_t value = processor.memory[processor.PC];
-            CHECK_EQ(processor.LD_8BIT(processor.memory[processor.HL.word], true), 3);
-            CHECK_EQ(processor.memory[processor.HL.word], value);
+        SUBCASE("LD_8BIT_IMM() returns 3 when loading into memory") {
+            CHECK_EQ(processor.LD_8BIT_IMM(processor.BC.high, true), 3);
         }
 
     }
