@@ -162,6 +162,82 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0xE: return LD_8BIT_IMM(AF.high);
                 case 0xF: return CCF();
             }
+        case 0x4:
+            switch (nibble2) {
+                case 0x0: return LD_8BIT(BC.high, BC.high);
+                case 0x1: return LD_8BIT(BC.high, BC.low);
+                case 0x2: return LD_8BIT(BC.high, DE.high);
+                case 0x3: return LD_8BIT(BC.high, DE.low);
+                case 0x4: return LD_8BIT(BC.high, HL.high);
+                case 0x5: return LD_8BIT(BC.high, HL.low);
+                case 0x6: return LD_8BIT(BC.high, memory[HL.word], true);
+                case 0x7: return LD_8BIT(BC.high, AF.high);
+                case 0x8: return LD_8BIT(BC.low, BC.high);
+                case 0x9: return LD_8BIT(BC.low, BC.low);
+                case 0xA: return LD_8BIT(BC.low, DE.high);
+                case 0xB: return LD_8BIT(BC.low, DE.low);
+                case 0xC: return LD_8BIT(BC.low, HL.high);
+                case 0xD: return LD_8BIT(BC.low, HL.low);
+                case 0xE: return LD_8BIT(BC.low, memory[HL.word], true);
+                case 0xF: return LD_8BIT(BC.low, AF.high);
+            }
+        case 0x5:
+            switch (nibble2) {
+                case 0x0: return LD_8BIT(DE.high, BC.high);
+                case 0x1: return LD_8BIT(DE.high, BC.low);
+                case 0x2: return LD_8BIT(DE.high, DE.high);
+                case 0x3: return LD_8BIT(DE.high, DE.low);
+                case 0x4: return LD_8BIT(DE.high, HL.high);
+                case 0x5: return LD_8BIT(DE.high, HL.low);
+                case 0x6: return LD_8BIT(DE.high, memory[HL.word], true);
+                case 0x7: return LD_8BIT(DE.high, AF.high);
+                case 0x8: return LD_8BIT(DE.low, BC.high);
+                case 0x9: return LD_8BIT(DE.low, BC.low);
+                case 0xA: return LD_8BIT(DE.low, DE.high);
+                case 0xB: return LD_8BIT(DE.low, DE.low);
+                case 0xC: return LD_8BIT(DE.low, HL.high);
+                case 0xD: return LD_8BIT(DE.low, HL.low);
+                case 0xE: return LD_8BIT(DE.low, memory[HL.word], true);
+                case 0xF: return LD_8BIT(DE.low, AF.high);
+            }
+        case 0x6:
+            switch (nibble2) {
+                case 0x0: return LD_8BIT(HL.high, BC.high);
+                case 0x1: return LD_8BIT(HL.high, BC.low);
+                case 0x2: return LD_8BIT(HL.high, DE.high);
+                case 0x3: return LD_8BIT(HL.high, DE.low);
+                case 0x4: return LD_8BIT(HL.high, HL.high);
+                case 0x5: return LD_8BIT(HL.high, HL.low);
+                case 0x6: return LD_8BIT(HL.high, memory[HL.word], true);
+                case 0x7: return LD_8BIT(HL.high, AF.high);
+                case 0x8: return LD_8BIT(HL.low, BC.high);
+                case 0x9: return LD_8BIT(HL.low, BC.low);
+                case 0xA: return LD_8BIT(HL.low, DE.high);
+                case 0xB: return LD_8BIT(HL.low, DE.low);
+                case 0xC: return LD_8BIT(HL.low, HL.high);
+                case 0xD: return LD_8BIT(HL.low, HL.low);
+                case 0xE: return LD_8BIT(HL.low, memory[HL.word], true);
+                case 0xF: return LD_8BIT(HL.low, AF.high);
+            }
+        case 0x7:
+            switch (nibble2) {
+                case 0x0: return LD_8BIT(memory[HL.word], BC.high, true);
+                case 0x1: return LD_8BIT(memory[HL.word], BC.low, true);
+                case 0x2: return LD_8BIT(memory[HL.word], DE.high, true);
+                case 0x3: return LD_8BIT(memory[HL.word], DE.low, true);
+                case 0x4: return LD_8BIT(memory[HL.word], HL.high, true);
+                case 0x5: return LD_8BIT(memory[HL.word], HL.low, true);
+                case 0x6: ;
+                case 0x7: return LD_8BIT(memory[HL.word], AF.high, true);
+                case 0x8: return LD_8BIT(AF.high, BC.high);
+                case 0x9: return LD_8BIT(AF.high, BC.low);
+                case 0xA: return LD_8BIT(AF.high, DE.high);
+                case 0xB: return LD_8BIT(AF.high, DE.low);
+                case 0xC: return LD_8BIT(AF.high, HL.high);
+                case 0xD: return LD_8BIT(AF.high, HL.low);
+                case 0xE: return LD_8BIT(AF.high, memory[HL.word], true);
+                case 0xF: return LD_8BIT(AF.high, AF.high);
+            }
         default: cout << "Instruction not recognized." << endl;
     }
 
