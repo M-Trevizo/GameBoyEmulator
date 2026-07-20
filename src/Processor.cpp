@@ -255,6 +255,10 @@ int Processor::STOP() {
     return 1;
 }
 
+int Processor::HALT() {
+    return 1;
+}
+
 // Branch/Control instructions
 // Jump Relative
 int Processor::JR() {

@@ -68,6 +68,8 @@ public:
     int NOP();
     // 0x10
     int STOP();
+    // 0x76
+    int HALT();
     // Control/Branch instructions
     int JR();
     int JRNZ();
