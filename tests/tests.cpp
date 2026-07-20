@@ -285,6 +285,17 @@ TEST_CASE("Testing Arithmetic Instructions") {
             CHECK_EQ(processor.SCF(), 1);
             CHECK_EQ(processor.AF.low, Z_FLAG | C_FLAG);
         }
+
+        SUBCASE("Testing CCF w/ no flags set") {
+            CHECK_EQ(processor.CCF(), 1);
+            CHECK_EQ(processor.AF.low, C_FLAG);
+        }
+
+        SUBCASE("Testing CCF w/ all flags set") {
+            processor.AF.low = Z_FLAG | H_FLAG | N_FLAG | C_FLAG;
+            CHECK_EQ(processor.CCF(), 1);
+            CHECK_EQ(processor.AF.low, Z_FLAG);
+        }
     }
 }
 
