@@ -160,6 +160,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0xC: return INC_8BIT(AF.high);
                 case 0xD: return DEC_8BIT(AF.high);
                 case 0xE: return LD_8BIT_IMM(AF.high);
+                case 0xF: return CCF();
             }
         default: cout << "Instruction not recognized." << endl;
     }
@@ -502,10 +503,24 @@ int Processor::CPL() {
     return 1;
 }
 
-// Set carry flag
 int Processor::SCF() {
 
     AF.low |= C_FLAG;
+    AF.low &= ~N_FLAG;
+    AF.low &= ~H_FLAG;
+
+    return 1;
+}
+
+int Processor::CCF() {
+
+    if(AF.low & C_FLAG) {
+        AF.low &= ~C_FLAG;
+    }
+    else {
+        AF.low |= C_FLAG;
+    }
+
     AF.low &= ~N_FLAG;
     AF.low &= ~H_FLAG;
 

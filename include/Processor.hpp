@@ -93,6 +93,8 @@ public:
     int CPL();
     // Set Carry Flag
     int SCF();
+    // Compliment Carry Flag
+    int CCF();
 
     // Inc/Dec instructions
     // 16-bit Increment
