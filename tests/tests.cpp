@@ -232,6 +232,8 @@ TEST_CASE("Testing Arithmetic Instructions") {
     }
 
     SUBCASE("Testing Add Instructions") {
+        processor.AF.low = 0x00;
+        REQUIRE_EQ(processor.AF.low, 0x00);
 
         SUBCASE("Testing 16-bit add") {
             processor.HL.word = 0x0;
@@ -268,6 +270,39 @@ TEST_CASE("Testing Arithmetic Instructions") {
                     CHECK_EQ(processor.AF.low, 0x0);
                 }
             }
+        }
+        SUBCASE("Testing 8-bit add from register") {
+            processor.AF.high = 0x10;
+            processor.BC.high = 0xD0;
+            CHECK_EQ(processor.ADD_8BIT(processor.BC.high), 1);
+            CHECK_EQ(processor.AF.high, 0xE0);
+        }
+
+        SUBCASE("Testing 8-bit add from memory") {
+            processor.AF.high = 0x10;
+            processor.HL.word = 0x0040; // C3
+            CHECK_EQ(processor.ADD_8BIT(processor.memory[processor.HL.word], true), 2);
+            CHECK_EQ(processor.AF.high, 0xD3);
+        }
+
+        SUBCASE("Testing 8-bit add sets Z-flag") {
+            processor.AF.high = 0x00;
+            processor.ADD_8BIT(processor.AF.high);
+            CHECK_EQ(processor.AF.low, Z_FLAG);
+        }
+
+        SUBCASE("Testing 8-bit add sets H-flag") {
+            processor.AF.high = 0x0F;
+            processor.BC.high = 0x01;
+            processor.ADD_8BIT(processor.BC.high);
+            CHECK_EQ(processor.AF.low, H_FLAG);
+        }
+
+        SUBCASE("Testing 8-bit add sets C-flag") {
+            processor.AF.high = 0xF0;
+            processor.BC.high = 0x20;
+            processor.ADD_8BIT(processor.BC.high);
+            CHECK_EQ(processor.AF.low, C_FLAG);
         }
     }
 
