@@ -227,7 +227,7 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0x3: return LD_8BIT(memory[HL.word], DE.low, true);
                 case 0x4: return LD_8BIT(memory[HL.word], HL.high, true);
                 case 0x5: return LD_8BIT(memory[HL.word], HL.low, true);
-                case 0x6: ;
+                case 0x6: return HALT();
                 case 0x7: return LD_8BIT(memory[HL.word], AF.high, true);
                 case 0x8: return LD_8BIT(AF.high, BC.high);
                 case 0x9: return LD_8BIT(AF.high, BC.low);
@@ -237,6 +237,17 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0xD: return LD_8BIT(AF.high, HL.low);
                 case 0xE: return LD_8BIT(AF.high, memory[HL.word], true);
                 case 0xF: return LD_8BIT(AF.high, AF.high);
+            }
+        case 0x8:
+            switch (nibble2) {
+                case 0x0: return ADD_8BIT(BC.high);
+                case 0x1: return ADD_8BIT(BC.low);
+                case 0x2: return ADD_8BIT(DE.high);
+                case 0x3: return ADD_8BIT(DE.low);
+                case 0x4: return ADD_8BIT(HL.high);
+                case 0x5: return ADD_8BIT(HL.low);
+                case 0x6: return ADD_8BIT(memory[HL.word], true);
+                case 0x7: return ADD_8BIT(AF.high);
             }
         default: cout << "Instruction not recognized." << endl;
     }
@@ -432,6 +443,29 @@ int Processor::ADD_HL_R16(uint16_t &reg) {
     HL.word += reg;
 
     return 2;
+}
+
+int Processor::ADD_8BIT(const uint8_t &val, const bool isMemory) {
+    const uint8_t result = AF.high + val;
+
+    if (result == 0) {
+        AF.low |= Z_FLAG;
+    }
+    if ((val & 0xF) + (AF.high & 0xF) > 0xF) {
+        AF.low |= H_FLAG;
+    }
+    if (static_cast<int>(AF.high) + static_cast<int>(val) > 0xFF) {
+        AF.low |= C_FLAG;
+    }
+    AF.low &= ~N_FLAG;
+
+    AF.high = result;
+
+    if (isMemory) {
+        return 2;
+    }
+
+    return 1;
 }
 
 // Stack(SP) Operations
