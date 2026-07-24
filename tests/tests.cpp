@@ -304,6 +304,14 @@ TEST_CASE("Testing Arithmetic Instructions") {
             processor.ADD_8BIT(processor.BC.high);
             CHECK_EQ(processor.AF.low, C_FLAG);
         }
+
+        SUBCASE("Testing 8-bit add with carry") {
+            processor.AF.low |= C_FLAG;
+            processor.AF.high = 0x00;
+            processor.BC.high = 0x01;
+            processor.ADD_8BIT(processor.BC.high, false, true);
+            CHECK_EQ(processor.AF.high, 0x02);
+        }
     }
 
     SUBCASE("Testing flag set instructions") {
