@@ -88,7 +88,7 @@ public:
     // Arithmetic instructions
     // Add instructions
     int ADD_HL_R16(uint16_t &reg);
-    int ADD_8BIT(const uint8_t &val, bool isMemory = false);
+    int ADD_8BIT(const uint8_t &val, bool isMemory = false, bool withCarry = false);
 
     // Decimal Adjust Accumulator
     int DAA();

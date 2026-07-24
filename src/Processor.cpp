@@ -248,6 +248,14 @@ int Processor::execute(array<uint8_t, 2> nibbles) {
                 case 0x5: return ADD_8BIT(HL.low);
                 case 0x6: return ADD_8BIT(memory[HL.word], true);
                 case 0x7: return ADD_8BIT(AF.high);
+                case 0x8: return ADD_8BIT(BC.high, false, true);
+                case 0x9: return ADD_8BIT(BC.low, false, true);
+                case 0xA: return ADD_8BIT(DE.high, false, true);
+                case 0xB: return ADD_8BIT(DE.low, false, true);
+                case 0xC: return ADD_8BIT(HL.high, false, true);
+                case 0xD: return ADD_8BIT(HL.low, false, true);
+                case 0xE: return ADD_8BIT(memory[HL.word], true, true);
+                case 0xF: return ADD_8BIT(AF.high, false, true);
             }
         default: cout << "Instruction not recognized." << endl;
     }
@@ -445,8 +453,11 @@ int Processor::ADD_HL_R16(uint16_t &reg) {
     return 2;
 }
 
-int Processor::ADD_8BIT(const uint8_t &val, const bool isMemory) {
-    const uint8_t result = AF.high + val;
+int Processor::ADD_8BIT(const uint8_t &val, const bool isMemory, const bool withCarry) {
+    uint8_t result = AF.high + val;
+    if (withCarry && AF.low & C_FLAG) {
+        result++;
+    }
 
     if (result == 0) {
         AF.low |= Z_FLAG;
